@@ -49,7 +49,7 @@ function VerifyOtpForm() {
       router.push('/reset-password');
     };
         return (
-      <form className="w-full max-w-[596px] bg-[#1B1B1B] border rounded-[16px] p-8 shadow-lg border-[#FFFFFF1A]" onSubmit={handleSubmit} noValidate>
+      <form className="w-full max-w-[596px] bg-[#1B1B1B] border rounded-[16px] p-8 shadow-lg border-[#FFFFFF1A] hover:border-[#F6D642]/40 transition" onSubmit={handleSubmit} noValidate>
   
         {/* HEADER */}
         <div className="text-center mb-8">

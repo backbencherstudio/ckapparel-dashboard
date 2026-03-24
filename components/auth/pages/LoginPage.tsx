@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function LoginPage() {
 
     return (
-        <div className="bg-black">
+        <div className="bg-black ">
 
             <div className="flex h-screen flex-col lg:flex-row bg-black max-w-[1440px] mx-auto">
 
@@ -46,7 +46,7 @@ function LoginFormComponent() {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <div className="w-full max-w-[596px] bg-[#1B1B1B] border  rounded-[16px] p-8 shadow-lg border-[#FFFFFF1A] text-[16px] font-semibold leading-[150%]">
+        <div className="w-full max-w-[596px] bg-[#1B1B1B] border  rounded-[16px] p-8 shadow-lg border-[#FFFFFF1A] text-[16px] font-semibold leading-[150%] hover:border-[#F6D642]/40 transition">
 
             {/* HEADER */}
             <div className="text-center mb-8">

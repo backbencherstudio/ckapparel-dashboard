@@ -155,5 +155,5 @@ body {
 
 
 .auth-input {
-  @apply w-full mt-2 flex h-[52px] items-center gap-2 self-stretch border [background:rgba(255,255,255,0.05)] px-3 py-2 rounded-xl border-solid flex-[1_0_0] text-neutral-500  text-sm font-normal leading-[150%] border-[rgba(255,255,255,0.10)] outline-none focus:border-[#F6D642] 
+  @apply w-full mt-2 flex h-[52px] items-center gap-2 self-stretch border [background:rgba(255,255,255,0.05)] px-3 py-2 rounded-xl border-solid flex-[1_0_0] placeholder:text-neutral-500 text-white  text-sm font-normal leading-[150%] border-[rgba(255,255,255,0.10)] outline-none focus:border-[#F6D642] 
 }

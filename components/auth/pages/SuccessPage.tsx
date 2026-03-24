@@ -39,7 +39,7 @@ import Link from "next/link";
 
 function AuthSuccess() {
   return (
-    <div className="w-full max-w-[596px] bg-[#1B1B1B] border rounded-[16px] p-8 shadow-lg border-[#FFFFFF1A] text-center">
+    <div className="w-full max-w-[596px] bg-[#1B1B1B] border rounded-[16px] p-8 shadow-lg border-[#FFFFFF1A] text-center hover:border-[#F6D642]/40 transition">
 
       {/* ICON */}
       <div className="flex justify-center mb-6">
