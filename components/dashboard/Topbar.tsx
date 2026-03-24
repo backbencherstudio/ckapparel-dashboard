@@ -1,5 +1,6 @@
 "use client";
-import { Bell, Menu } from 'lucide-react';
+import { Bell, Menu, User } from 'lucide-react';
+import { useState } from 'react';
 
 type Props = {
   name: string;
@@ -8,31 +9,45 @@ type Props = {
 
 export const Topbar = ({ name, onMenuClick }: Props) => {
 
-    return (    
-        <header className="h-19.5 bg-[#161616] border-b border-gray-200 flex items-center justify-between px-4 shrink-0">
+  const [showNotification, setShowNotification] = useState(false);
+
+  return (
+    <header className="h-19.5 bg-[#161616] border-b border-white/10 flex items-center justify-between px-4 shrink-0">
+
+      {/* menu icon */}
       <div className="flex items-center gap-3 min-w-0">
         <button onClick={onMenuClick} className="md:hidden p-1.5 rounded-md hover:bg-gray-100">
           <Menu className="w-5 h-5" />
         </button>
-        <div className="min-w-0">
-          <p className="text-gray-500 text-xs truncate">Welcome back,</p>
-          <p className="font-semibold text-sm truncate">{name}</p>
-        </div>
       </div>
 
+      {/* notification icon */}
       <div className="flex items-center gap-2">
-        <input
-          type="text"
-          placeholder="Search"
-          className="hidden md:block border border-gray-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 w-48"
-        />
-        <div className="bg-gray-100 rounded-xl">
-          {/* <SwitchLanguage /> */}
+        <div className="relative">
+          <button className="flex items-start gap-2 border border-white/10 bg-[#1C1C1C] p-2 rounded-full border-solid transition-colors hover:border-[#F6D642]/40">
+            <Bell className="w-5 h-5" />
+          </button>
+
+          {/* alert iocn*/}
+          <div className="absolute top-2.5 right-2.5 flex w-2 h-2 justify-center items-center gap-2.5 shrink-0 bg-[#EB3D4D] px-0.5 py-px rounded-[14px]">
+          </div>
+
         </div>
-        <button className="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors">
-          <Bell className="w-4 h-4" />
-        </button>
+
+
+        {/* profile icon */}
+        <div className="flex items-center gap-2">
+          <button className="flex items-start gap-2 border border-white/10 bg-[#1C1C1C] p-2 rounded-full border-solid transition-colors hover:border-[#F6D642]/40">
+            <User className="w-5 h-5" />
+          </button>
+          <div>
+            <div>
+              <p className="text-white  text-sm font-semibold leading-[150%]">Josh Cornishbay</p>
+              <p className="text-white-solid text-xs font-normal leading-[150%] text-gray-500">Admin</p>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
-  );    
+  );
 };
