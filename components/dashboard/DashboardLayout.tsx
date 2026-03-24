@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { LayoutDashboard, BarChart2, Users, LogOut, } from 'lucide-react';
 import HomeIcon from '../icons/HomeIcon';
 import { NavItem, Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
@@ -59,7 +58,7 @@ export default function DashboardLayoutComp({
           onMenuClick={() => setSidebarOpen(prev => !prev)}
         />
 
-        <main className="flex-1 overflow-y-auto p-4">
+        <main className="flex-1 overflow-y-auto md:p-6 p-4">
           {children}
         </main>
       </div>
