@@ -5,6 +5,8 @@ import DataTable, { Column } from "@/components/reuseable/data-table/DataTable";
 import TableToolbar from "@/components/reuseable/data-table/TableToolbar";
 import RowActions from "@/components/reuseable/data-table/TableRowActions";
 import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
+import { Eye, Check, X } from "lucide-react";
+import { Icons } from "@/components/icons/TableAction";
 
 type Athlete = {
     name: string;
@@ -80,6 +82,39 @@ export default function AthletePage() {
                     // onEdit={() => console.log(row)}
                     onDelete={() => console.log(row)}
                 />
+
+                // <RowActions
+                //     actions={[
+                //         {
+                //             key: "view",
+                //             icon: <Eye size={16} />,
+                //             title: "View",
+                //             onClick: () => console.log("view"),
+                //             className: "bg-blue-500",
+                //         },
+                //         {
+                //             key: "edit",
+                //             icon: <Icons.Pencil />,
+                //             title: "Edit",
+                //             onClick: () => console.log("edit"),
+                //             className: "bg-purple-500",
+                //         },
+                //         {
+                //             key: "reject",
+                //             icon: <X size={16} />, // 👈 new action
+                //             title: "Reject",
+                //             onClick: () => console.log("reject"),
+                //             className: "bg-red-500",
+                //         },
+                //         {
+                //             key: "accept",
+                //             icon: <Check size={16} />,
+                //             title: "Accept",
+                //             onClick: () => console.log("accept"),
+                //             className: "bg-green-500",
+                //         },
+                //     ]}
+                // />
             ),
         },
     ];
@@ -98,7 +133,7 @@ export default function AthletePage() {
                         label: "All Countries",
                         value: country,
                         options: [
-                            {label: "All Countries", value: "all"},
+                            { label: "All Countries", value: "all" },
                             { label: "Australia", value: "Australia" },
                             { label: "USA", value: "USA" },
                         ],

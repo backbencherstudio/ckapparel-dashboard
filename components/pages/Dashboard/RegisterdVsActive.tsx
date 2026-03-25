@@ -31,7 +31,7 @@ const data = [
   { name: "Sep", registered: 80, active: 40 },
 ];
 
-export default function AthleteChart() {
+export default function RegisteredVsActive() {
   return (
     <Card className="bg-[#161616] border border-[#FFFFFF1A] rounded-xl ">
       

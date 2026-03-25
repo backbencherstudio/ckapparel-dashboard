@@ -36,7 +36,7 @@ export default function TableToolbar({
 
 }: Props) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
 
       {/* TITLE */}
       <h2 className="text-white text-lg font-semibold">{title}</h2>

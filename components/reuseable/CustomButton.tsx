@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 
 interface CustomButtonProps {
   children: React.ReactNode;
-  variant?: "auth" | "approve" | "reject" | "danger" | "cancel";
+  variant?: "auth" | "approve" | "reject" | "danger" | "cancel" | "tableAction";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
   className?: string;
@@ -44,6 +44,8 @@ export default function CustomButton({
 
     cancel:
       "bg-[#E5E5E5] text-black",
+
+    tableAction: "bg-white text-black hover:bg-[#F6D642]",
   };
 
   return (
