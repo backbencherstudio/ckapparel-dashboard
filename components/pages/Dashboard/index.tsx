@@ -2,6 +2,7 @@ import React from 'react'
 import StatsCards from './StatsCards'
 import RegisterdVsActive from './RegisterdVsActive'
 import TotalParticipantPieChart from './TotalParticipantPieChart'
+import AthleteTable from './AthleteTable'
 
 export default function DashboardPage() {
   return (
@@ -16,6 +17,7 @@ export default function DashboardPage() {
           <TotalParticipantPieChart />
         </div>
         </div>
+        <AthleteTable />
     </div>
   )
 }

@@ -47,11 +47,11 @@ export default function AthleteChart() {
             {/* LEGEND */}
             <div className="flex items-center gap-4 mt-2 text-sm text-neutral-400">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-3 rounded-full bg-white"></span>
+                <span className="w-4 h-2 rounded-full bg-white shrink-0"></span>
                 Registered
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-5 h-3 rounded-full bg-[#F6D642]"></span>
+                <span className="w-4 h-2 rounded-full bg-[#F6D642] shrink-0"></span>
                 Active Athletes
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function AthleteChart() {
                   color: "#fff",
                 }}
                 cursor={{ fill: "rgba(255,255,255,0.05)" }}
-                content={<CustomTooltip />}
+                content={<CustomTooltip active={true} payload={[]} />}
               />
 
               {/* REGISTERED */}
@@ -129,8 +129,8 @@ const CustomTooltip = ({ active, payload }: { active: boolean, payload: any[] })
     if (active && payload && payload.length) {
       return (
         <div className="bg-[#2C2F33] px-3 py-2 rounded-lg text-sm text-white">
-          <p>Registered: {payload[0].value}%</p>
-          <p>Active: {payload[1].value}%</p>
+          <p>Registered: {payload[0].value}</p>
+          <p>Active: {payload[1].value}</p>
         </div>
       );
     }

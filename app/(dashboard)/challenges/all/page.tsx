@@ -1,7 +1,8 @@
 import React from 'react'
+import AllChallengesTable from '@/components/pages/challenges/AllChallengesTable'
 
 export default function page() {
   return (
-    <div>All Challenges</div>
+    <div><AllChallengesTable /></div>
   )
 }
