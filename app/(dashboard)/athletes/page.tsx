@@ -1,6 +1,11 @@
 
+import AthletesManagementPage from '@/components/pages/athletes-management'
+
+
 export default function page() {
   return (
-    <div>Athletes</div>
+    <div>
+      <AthletesManagementPage />
+    </div>
   )
 }
