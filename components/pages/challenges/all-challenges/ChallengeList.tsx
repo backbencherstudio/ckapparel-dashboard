@@ -5,7 +5,7 @@ import DataTable, { Column } from "@/components/reuseable/data-table/DataTable";
 import TableToolbar from "@/components/reuseable/data-table/TableToolbar";
 import RowActions from "@/components/reuseable/data-table/TableRowActions";
 import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
-import { Button } from "@/components/ui/button";
+
 import CustomButton from "@/components/reuseable/CustomButton";
 import { useRouter } from "next/navigation";
 

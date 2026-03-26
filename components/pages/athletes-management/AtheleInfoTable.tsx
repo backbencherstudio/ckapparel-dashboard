@@ -5,6 +5,8 @@ import DataTable, { Column } from "@/components/reuseable/data-table/DataTable";
 import TableToolbar from "@/components/reuseable/data-table/TableToolbar";
 import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
 import { Eye } from "lucide-react"; // Assuming you use lucide-react for icons
+import CustomModal from "@/components/reuseable/CustomModal";
+import ViewDetails from "./ViewDetails";
 
 type Athlete = {
     id: string;
@@ -73,13 +75,19 @@ const data: Athlete[] = [
 export default function AthleteTable() {
     const [search, setSearch] = useState("");
     const [country, setCountry] = useState("");
+    const [selectedAthletes, setSelectedAthletes] = useState<Athlete | null>(null);
+
+
+    const handleDeselect = () => {
+        setSelectedAthletes(null);
+    };
 
     const filtered = useMemo(() => {
         return data.filter((r) => {
             const matchesSearch = r.name.toLowerCase().includes(search.toLowerCase());
             const matchesCountry = country ? r.country === country : true;
-            if(country === "All Countries") {
-                return matchesSearch ;
+            if (country === "All Countries") {
+                return matchesSearch;
             }
             return matchesSearch && matchesCountry;
         });
@@ -113,7 +121,7 @@ export default function AthleteTable() {
             header: "Actions",
             cell: (row) => (
                 <button
-                    onClick={() => console.log("Viewing", row.id)}
+                    onClick={() => setSelectedAthletes(row)}
                     className="flex items-center gap-2 px-4 py-1.5 rounded-lg border border-blue-600/50 text-white text-sm hover:bg-blue-500/10 transition-colors cursor-pointer"
                 >
                     <Eye size={16} />
@@ -149,10 +157,21 @@ export default function AthleteTable() {
             <DataTable
                 columns={columns}
                 data={filtered}
-
-
             // selectable // Assuming your DataTable handles the checkboxes seen in the image
             />
+
+            <CustomModal
+                open={selectedAthletes !== null}
+                onOpenChange={(open) => setSelectedAthletes(open ? selectedAthletes : null)}
+                onClose={handleDeselect}
+                title="Athlete Information"
+                className="w-[440px]"
+            >
+                <div className="mt-2">
+                    <ViewDetails selectedAthletes={selectedAthletes}/>
+                </div>
+            </CustomModal>
+
         </div>
     );
 }

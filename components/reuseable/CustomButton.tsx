@@ -9,9 +9,11 @@ interface CustomButtonProps {
   fullWidth?: boolean;
   className?: string;
   onClick?: () => void;
+  type?: "button" | "submit" | "reset";
 }
 
 export default function CustomButton({
+  type = "button",
   children,
   variant = "auth",
   size = "md",
