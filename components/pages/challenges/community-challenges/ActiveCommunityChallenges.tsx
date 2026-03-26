@@ -5,18 +5,19 @@ import DataTable, { Column } from "@/components/reuseable/data-table/DataTable";
 import TableToolbar from "@/components/reuseable/data-table/TableToolbar";
 import RowActions from "@/components/reuseable/data-table/TableRowActions";
 import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
-import CreateChallenge from "../all-challenges/CreateChallenge";
-import CreateChallengeForm from "../all-challenges/CreateChallengeForm";
+// import CreateChallenge from "./CreateChallenge";
+// import CreateChallengeForm from "./CreateChallengeForm";
 import CustomModal from "@/components/reuseable/CustomModal";
+import CreateChallengeForm from "../all-challenges/CreateChallengeForm";
 
 type Challenge = {
     name: string;
     description: string;
-    type: "Main Event" | "Benchmark" | "Virtual";
+    createdBy: string;
+    category: string;
     difficulty: "hard" | "medium" | "easy";
+    submitedAt: string;
     participants: number;
-    reward: string;
-    status: "Active" | "Pending";
 };
 
 // dummy data
@@ -24,54 +25,53 @@ const data: Challenge[] = [
     {
         name: "50KM Ultra Run",
         description: "Complete 50km within 6 hours",
-        type: "Main Event",
+        category: "running",
         difficulty: "hard",
         participants: 56,
-        reward: "10000",
-        status: "Active",
+        createdBy: "Admin",
+        submitedAt: "2026-03-26",
     },
     {
         name: "The Vertical 1000",
         description: "November Main Event, 1,000m elev...",
-        type: "Main Event",
+        category: "swimming",
         difficulty: "hard",
         participants: 127,
-        reward: "10000",
-        status: "Active",
+        createdBy: "Admin",
+        submitedAt: "2026-03-26",
     },
     {
         name: "Amazon Distance Run",
         description: "6,400km virtual journey, Brazil",
-        type: "Virtual",
+        category: "cycling",
         difficulty: "hard",
         participants: 341,
-        reward: "10000",
-        status: "Active",
+        createdBy: "Admin",
+        submitedAt: "2026-03-26",
     },
     {
         name: "Sunrise City Sprint",
         description: "Community — G. Hernandez",
-        type: "Benchmark",
+        category: "running",
         difficulty: "medium",
         participants: 203,
-        reward: "10000",
-        status: "Pending",
+        createdBy: "G. Hernandez",
+        submitedAt: "2026-03-26",
     },
     {
         name: "Beachside 10K",
         description: "Early morning coastal run",
-        type: "Virtual",
+        category: "cycling",
         difficulty: "medium",
         participants: 89,
-        reward: "10000",
-        status: "Active",
+        createdBy: "Admin",
+        submitedAt: "2026-03-26",
     },
 ];
 
 // get columns
 const getColumns = (
     handleView: (row: Challenge) => void,
-    handleEdit: (row: Challenge) => void,
     handleDelete: (row: Challenge) => void
 ): Column<Challenge>[] => [
         {
@@ -83,17 +83,17 @@ const getColumns = (
                 </div>
             ),
         },
-        { header: "Type", cell: (row) => <TableBadge variant={row.type}>{row.type}</TableBadge> },
+        { header: "Category", cell: (row) => <p className="text-xs text-neutral-400/80 capitalize">{row.category}</p> },
         { header: "Difficulty", cell: (row) => <TableBadge variant={row.difficulty}>{row.difficulty}</TableBadge> },
-        { header: "Participants", accessor: "participants", cell: (row) => <p className="text-xs text-neutral-400/80">{row.participants}</p> },
-        { header: "Reward", accessor: "reward", cell: (row) => <p className="text-xs text-neutral-500/90">{row.reward}</p> },
-        { header: "Status", cell: (row) => <TableBadge variant={row.status}>{row.status}</TableBadge> },
+        { header: "Participants", accessor: "participants" },
+        { header: "Created By", accessor: "createdBy" },
+        { header: "Submitted At", accessor: "submitedAt", cell: (row) => <p className="text-xs text-neutral-400/80">{row.submitedAt}</p> },
         {
             header: "Actions",
             cell: (row) => (
                 <RowActions
                     onView={() => handleView(row)}
-                    onEdit={() => handleEdit(row)}
+
                     onDelete={() => handleDelete(row)}
                 />
             ),
@@ -102,11 +102,11 @@ const getColumns = (
 
 
 // main component
-export default function MonthlyChallengesTable() {
+export default function ActiveCommunityChallenges() {
     const [search, setSearch] = useState("");
-    const [type, setType] = useState("");
+    const [category, setCategory] = useState("");
     const [difficulty, setDifficulty] = useState("");
-    const [status, setStatus] = useState("");
+    const [createdBy, setCreatedBy] = useState("");
 
     const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
     const [isView, setIsView] = useState(false);
@@ -115,13 +115,13 @@ export default function MonthlyChallengesTable() {
     const filtered = useMemo(() => {
         return data.filter((r) => {
             const matchesSearch = r.name.toLowerCase().includes(search.toLowerCase());
-            const matchesType = type ? r.type === type : true;
+            const matchesCategory = category ? r.category === category : true;
             const matchesDifficulty = difficulty ? r.difficulty === difficulty : true;
-            const matchesStatus = status ? r.status === status : true;
+            const matchesCreatedBy = createdBy ? r.createdBy === createdBy : true;
 
-            return matchesSearch && matchesType && matchesDifficulty && matchesStatus;
+            return matchesSearch && matchesCategory && matchesDifficulty && matchesCreatedBy;
         });
-    }, [search, type, difficulty, status]);
+    }, [search, category, difficulty, createdBy]);
 
 
     // ========================== Open modals ==============================
@@ -158,19 +158,19 @@ export default function MonthlyChallengesTable() {
     return (
         <div className="table-wrapper">
             <TableToolbar
-                title="Challenge List"
+                title="Active Community Challenges"
                 onSearch={setSearch}
                 filters={[
-
                     {
-                        key: "type",
-                        label: "All Types",
+                        key: "category",
+                        label: "All Categories",
                         options: [
-                            { label: "Main Event", value: "Main Event" },
-                            { label: "Benchmark", value: "Benchmark" },
+                            { label: "Elite", value: "Elite" },
+                            { label: "Monthly", value: "Monthly" },
                             { label: "Virtual", value: "Virtual" },
+                            { label: "Community", value: "Community" },
                         ],
-                        onChange: setType,
+                        onChange: setCategory,
                     },
                     {
                         key: "difficulty",
@@ -182,11 +182,12 @@ export default function MonthlyChallengesTable() {
                         ],
                         onChange: setDifficulty,
                     },
-                    
+
                 ]}
             />
 
-            <DataTable columns={getColumns(OpenView, OpenEdit, OpenDelete)} data={filtered} />
+            <DataTable
+                columns={getColumns(OpenView, OpenDelete)} data={filtered} />
 
             {
                 isView &&
@@ -201,7 +202,7 @@ export default function MonthlyChallengesTable() {
                 >
                     <CreateChallengeForm
                         mode="view"
-                        defaultData={{ challengeName: selectedChallenge?.name ?? "", challengeDescription: selectedChallenge?.description ?? "", challengeType: selectedChallenge?.type ?? "", difficultyLevel: selectedChallenge?.difficulty ?? "" }}
+                        defaultData={{ challengeName: selectedChallenge?.name ?? "", challengeDescription: selectedChallenge?.description ?? "", challengeType: selectedChallenge?.category ?? "", difficultyLevel: selectedChallenge?.difficulty ?? "" }}
                         onSubmit={(data) => handleEdit(data as unknown as Challenge)}
                     />
                 </CustomModal>
@@ -226,7 +227,7 @@ export default function MonthlyChallengesTable() {
                         defaultData={{
                             challengeName: selectedChallenge?.name ?? "",
                             challengeDescription: selectedChallenge?.description ?? "",
-                            challengeType: selectedChallenge?.type ?? "Main Event",
+                            challengeType: selectedChallenge?.category ?? "challengeType1",
                             difficultyLevel: selectedChallenge?.difficulty ?? "easy"
                         }}
                         onSubmit={(data) => handleEdit(data as unknown as Challenge)}

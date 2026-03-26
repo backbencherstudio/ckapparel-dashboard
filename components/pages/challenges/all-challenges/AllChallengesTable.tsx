@@ -156,7 +156,7 @@ export default function AllChallengesTable() {
 
 
     return (
-      <div className="space-y-6">
+      <div className="table-wrapper">
         <TableToolbar
           title="Challenge List"
           onSearch={setSearch}

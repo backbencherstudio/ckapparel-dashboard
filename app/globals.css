@@ -174,3 +174,6 @@ body {
 }
 
 
+.table-wrapper {
+  @apply bg-[#121212] p-6 rounded-xl space-y-6;
+}

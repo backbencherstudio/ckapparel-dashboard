@@ -120,7 +120,7 @@ export default function AthletePage() {
     ];
 
     return (
-        <div className="space-y-6">
+        <div className="table-wrapper">
 
             <TableToolbar
                 title="Athlete Information"

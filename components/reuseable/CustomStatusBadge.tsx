@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const statusBadgeVariants = cva(
-  "inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium tracking-wide whitespace-nowrap transition-colors",
+  "inline-flex items-center rounded-full border px-3 py-0.5 text-xs font-medium tracking-wide whitespace-nowrap transition-colors capitalize",
   {
     variants: {
       variant: {
@@ -25,6 +25,7 @@ const statusBadgeVariants = cva(
           "border-zinc-600/40 bg-zinc-700/20 text-zinc-500",
         Banned:
           "border-red-400/40 bg-red-400/10 text-red-400",
+          
       },
     },
     defaultVariants: {

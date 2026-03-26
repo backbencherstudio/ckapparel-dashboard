@@ -156,7 +156,7 @@ export default function ChallengesListTable() {
 
 
     return (
-        <div className="border bg-white/5 p-6 rounded-2xl border-white/10">
+        <div className="table-wrapper">
 
             <TableToolbar
                 title="Challenge List"

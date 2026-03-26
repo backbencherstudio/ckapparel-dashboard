@@ -132,7 +132,7 @@ export default function AthleteTable() {
     ];
 
     return (
-        <div className="bg-[#121212] p-6 rounded-xl space-y-6">
+        <div className="table-wrapper">
             <TableToolbar
                 title="Athlete List"
                 search={search}
