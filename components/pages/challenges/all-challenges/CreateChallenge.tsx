@@ -6,13 +6,13 @@ import CustomButton from "@/components/reuseable/CustomButton";
 import { useState } from "react";
 import CustomModal from "@/components/reuseable/CustomModal";
 import { FormProvider, useForm } from "react-hook-form";
-import CreateChallengeForm, { FormValues } from "./CreateChallengeForm";
+import CreateChallengeForm from "./CreateChallengeForm";
 
 
 export default function CreateChallenge() {
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleCreate = (data?: FormValues | undefined) => {
+    const handleCreate = (data?: any | undefined) => {
         console.log("Handle Create api", data);
         setIsOpen(false);
     }

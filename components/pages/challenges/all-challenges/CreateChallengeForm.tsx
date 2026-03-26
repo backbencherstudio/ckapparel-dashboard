@@ -6,7 +6,6 @@ import { FormSelect } from "@/components/form/form-select";
 import { FormProvider, useForm } from "react-hook-form";
 import FormInput from "@/components/form/form-input";
 import CustomButton from "@/components/reuseable/CustomButton";
-import { Challenge } from "@/types/challenge";
 
 const schema = z.object({
     challengeName: z.string()
@@ -21,16 +20,7 @@ const schema = z.object({
         .min(1, "Difficulty level is required"),
 })
 
-export type FormValues = z.infer<typeof schema>
-
-export function formToChallenge(form: FormValues): Partial<Challenge> {
-    return {
-        name: form.challengeName,
-        description: form.challengeDescription,
-        category: form.challengeType as Challenge["category"],
-        difficulty: form.difficultyLevel as Challenge["difficulty"],
-    };
-}
+type FormValues = z.infer<typeof schema>
 
 type FormMode = "create" | "view" | "edit"
 
@@ -52,7 +42,7 @@ export default function CreateChallengeForm({ mode = "create", defaultData, onSu
             difficultyLevel: defaultData?.difficultyLevel ?? "",
         },
     })
-    
+
     return (
         <FormProvider {...methods}>
             <form className="space-y-5" onSubmit={methods.handleSubmit(onSubmit)}>
