@@ -1,7 +1,7 @@
-import React from 'react'
 
+import EliteChallengesPage from '@/components/pages/challenges/elite-challenges'
 export default function page() {
   return (
-    <div>Elite Challenges</div>
+    <EliteChallengesPage />
   )
 }
