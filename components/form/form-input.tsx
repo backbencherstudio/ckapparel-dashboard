@@ -27,7 +27,7 @@ export function SimpleInput({
             <input
                 {...props}
                 className={cn(
-                    "flex h-10 items-center gap-2 self-stretch border px-[15px] py-2.5 rounded-lg border-solid border-[rgba(255,255,255,0.10)] focus:border-[#F6D642]",
+                    "flex min-h-10 items-center gap-2 self-stretch border px-[15px] py-2.5 rounded-lg border-solid border-[rgba(255,255,255,0.10)] focus:border-[#F6D642]",
                     "placeholder:text-[#5B5B5B] placeholder:font-[Inter] placeholder:text-sm placeholder:font-normal placeholder:leading-5",
                     "bg-transparent text-white text-sm outline-none w-full",
                     inputClassName

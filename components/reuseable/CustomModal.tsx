@@ -5,9 +5,7 @@ import clsx from "clsx";
 import { Button } from "../ui/button";
 import { XIcon } from "lucide-react";
 
-interface ReusableModalProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
+interface ReusableModalProps extends React.ComponentProps<typeof Dialog> {
     onClose?: () => void;
     title?: string;
     children: React.ReactNode;
@@ -31,7 +29,7 @@ export default function CustomModal({
         if (!newOpen && onClose) {
             onClose();
         }
-        onOpenChange(newOpen);
+        onOpenChange?.(newOpen);
     };
 
 
@@ -50,11 +48,11 @@ export default function CustomModal({
                 <div className="flex justify-between items-center ">
                     <div className="" >
                         {title && (
-                         
-                                <h3 className="text-white font-medium leading-[128%] tracking-[-0.36px] text-[24px] ">
-                                    {title}
-                                </h3>
-                           
+
+                            <h3 className="text-white font-medium leading-[128%] tracking-[-0.36px] text-[24px] ">
+                                {title}
+                            </h3>
+
                         )}
                     </div>
                     {customCloseButton && (
@@ -69,7 +67,7 @@ export default function CustomModal({
 
                 <div className="">
 
-                   
+
                     {children}
                 </div>
             </DialogContent>

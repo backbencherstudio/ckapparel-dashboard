@@ -177,3 +177,11 @@ body {
 .table-wrapper {
   @apply bg-[#121212] p-6 rounded-xl space-y-6;
 }
+
+/* .auth-textarea {
+  @apply auth-input h-auto min-h-[120px] py-3 items-start resize-none;
+} */
+
+button:hover {
+  cursor: pointer;
+}
