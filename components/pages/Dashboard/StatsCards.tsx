@@ -16,15 +16,15 @@ export default function StatsCards() {
 }
 
 
-const StatsCard = ({ title, value, icon }: { title: string, value: string, icon: React.ReactNode }) => {
+export const StatsCard = ({ title, value, icon }: { title: string, value: string, icon: React.ReactNode }) => {
     return (
         <div className='bg-[#161616] p-4 border border-[#FFFFFF1A] rounded-xl'>
             {/* title and icon */}
             <div className='flex items-center  gap-3 '>
-                <div className='flex w-[42px] h-[42px] justify-center items-center aspect-[1/1] [background:rgba(246,214,66,0.20)] p-[11px] rounded-[32px] shrink-0 text-[#F6D642]'>
+                <div className='flex w-[42px] h-[42px] justify-center items-center  [background:rgba(246,214,66,0.20)] p-[11px] rounded-[32px] shrink-0 text-[#F6D642]'>
                     {icon}
                 </div>
-                <h3 className='text-white [font-family:Inter] text-base font-normal leading-[150%]'>{title}</h3>
+                <h3 className='text-white  text-base font-normal leading-[150%]'>{title}</h3>
             </div>
             {/* value */}
             <p className='self-stretch text-white  text-4xl font-semibold leading-[120%] mt-4'>{value}</p>
