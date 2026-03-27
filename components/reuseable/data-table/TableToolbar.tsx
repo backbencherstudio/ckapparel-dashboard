@@ -53,7 +53,7 @@ export default function TableToolbar({
             <SearchIcon className="text-neutral-500 w-4 h-4" />
 
             <Input
-              placeholder={placeholder || "Search..."}
+              placeholder={placeholder || "Search athlete or challenges..."}
               className="bg-transparent border-none p-0 h-auto text-white 
            focus:ring-0 focus-visible:ring-0"
             />

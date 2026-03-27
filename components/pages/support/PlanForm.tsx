@@ -18,7 +18,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 interface CreateSupportPlanFormProps {
-  onSubmit?: (data: FormValues) => void;
+  onSubmit: (data: FormValues) => void;
   onCancel?: () => void;
 }
 

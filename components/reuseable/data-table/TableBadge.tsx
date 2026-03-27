@@ -23,6 +23,8 @@ export function TableBadge({ children, variant }: BadgeProps) {
     "Easy": "border-yellow-500 bg-yellow-500/10 text-yellow-500",
     "High": "border-yellow-500 bg-yellow-500/10 text-yellow-500",
     "Low": "border-yellow-500 bg-yellow-500/10 text-yellow-500",
+    "open": "border-[#2079FF] bg-[#2079FF1A] text-[#2079FF]",
+    "close": "border-[#E03137] bg-[#E031371A] text-[#E03137]",
     
   };
 
