@@ -1,8 +1,9 @@
 import React from 'react'
-import { StatsCard } from '../dashboard/StatsCards'
+
 import HandShakeIcon from '@/components/icons/HandShakeIcon'
 import PendingIcon from '@/components/icons/PendingIcon'
 import SuccessIcon from '@/components/icons/SuccessIcon'
+import { StatsCard } from '../dashboard/StatsCards'
 
 export default function SponsorshipStats() {
     return (
