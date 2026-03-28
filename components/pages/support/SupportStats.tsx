@@ -1,5 +1,5 @@
 import SupportIcon from "@/components/icons/SupportIcon";
-import { StatsCard } from "../dashboard/StatsCards";
+import { StatsCard } from "@/components/pages/dashboard/StatsCards";
 import HandShakeIcon from "@/components/icons/HandShakeIcon";
 import QuotationIcon from "@/components/icons/QuotationIcon";
 import ChallengesIcon from "@/components/icons/ChallengesIcon";
