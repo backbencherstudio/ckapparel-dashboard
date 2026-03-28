@@ -131,7 +131,10 @@ const NavLink = ({
   onToggle: () => void;
 }) => {
   const pathname = usePathname();
-  const isActive = pathname === item.href;
+  const isActive =
+  item.href === "/"
+    ? pathname === "/"                // exact match for home
+    : pathname.startsWith(item.href); // prefix match for everything else
   const hasChildren = item.children && item.children.length > 0;
   const isChildActive = item.children?.some(child => pathname === child.href);
 

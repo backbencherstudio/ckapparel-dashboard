@@ -28,8 +28,9 @@ const NAV_ITEMS: NavItem[] = [
   { id: 5, label: 'Support', href: '/support', icon: SupportIcon },
   { id: 6, label: 'Sponsorship Hub', href: '/sponsorship-hub', icon: HandShakeIcon },
   { id: 7, label: 'Chat', href: '/chat', icon: ChatIcon },
+  // { id: 8, label: 'Settings', href: '/settings', icon: SettingIcon },
   { id: 8, label: 'Settings', href: '/settings', icon: SettingIcon },
-  // { id: 7, label: 'Logout', href: '/logout', icon: LogOut },
+ 
 ];
 
 export default function DashboardLayoutComp({
