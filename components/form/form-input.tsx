@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils"
 import { Controller, useFormContext } from "react-hook-form"
 
 
+
 // =============================== Simple Input ===============================
 interface SimpleInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string
@@ -42,11 +43,12 @@ export function SimpleInput({
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     name: string
     label?: string
+    inputClassName?: string  
     labelClassName?: string
     containerClassName?: string
 }
 
-export default function FormInput({ name, label, labelClassName, containerClassName, ...props }: FormInputProps) {
+export default function FormInput({ name, label, labelClassName,  containerClassName, ...props }: FormInputProps) {
     const { control } = useFormContext()
 
     return (

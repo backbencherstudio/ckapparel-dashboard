@@ -28,8 +28,9 @@ const NAV_ITEMS: NavItem[] = [
   { id: 5, label: 'Support', href: '/support', icon: SupportIcon },
   { id: 6, label: 'Sponsorship Hub', href: '/sponsorship-hub', icon: HandShakeIcon },
   { id: 7, label: 'Chat', href: '/chat', icon: ChatIcon },
+  // { id: 8, label: 'Settings', href: '/settings', icon: SettingIcon },
   { id: 8, label: 'Settings', href: '/settings', icon: SettingIcon },
-  // { id: 7, label: 'Logout', href: '/logout', icon: LogOut },
+ 
 ];
 
 export default function DashboardLayoutComp({
@@ -58,9 +59,14 @@ export default function DashboardLayoutComp({
           onMenuClick={() => setSidebarOpen(prev => !prev)}
         />
 
-        <main className="flex-1 overflow-y-auto md:p-6 p-4 bg-black">
+        <main className="flex-1 overflow-y-auto md:px-6 px-4 pt-4 md:pt-6 bg-black ">
           {children}
         </main>
+
+
+        {/* <main className="flex-1 overflow-y-auto md:p-6 p-4 bg-black">
+          {children}
+        </main> */}
       </div>
     </div>
   );

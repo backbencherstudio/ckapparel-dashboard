@@ -24,7 +24,7 @@ export default function DashboardPage() {
           <TotalParticipantPieChart />
         </div>
       </div>
-
+ 
       <ChallengesListTable />
     </div>
   )

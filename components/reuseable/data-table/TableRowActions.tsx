@@ -33,17 +33,19 @@ export default function RowActions({
         </button>
       )}
 
+
+      {onAccept && (
+        <button onClick={onAccept} className="flex w-6 h-6 justify-center items-center gap  [background:var(--Others-Green,#22C55E)] p-0.5 rounded-md">
+          <Check size={16} />
+        </button>
+      )}
+
       {onDelete && (
         <button onClick={onDelete} className="flex w-6 h-6 justify-center items-center gap  [background:var(--Others-Red,#E03137)] p-0.5 rounded-md">
           <Icons.Trash />
         </button>
       )}
 
-      {onAccept && (
-        <button onClick={onAccept} className="flex w-6 h-6 justify-center items-center gap  [background:var(--Others-Green,#22C55E)] p-0.5 rounded-md">
-          <Check size={16} />
-        </button>
-      ) }
     </div>
   );
 }

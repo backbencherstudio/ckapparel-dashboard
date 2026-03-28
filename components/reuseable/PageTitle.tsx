@@ -4,7 +4,7 @@ import { Plus } from 'lucide-react'
 
 interface PageTitleProps {
     title: string
-    description: string
+    description?: string
     action?: React.ReactNode
 }
 
