@@ -1,4 +1,5 @@
-import DashboardPage from "@/components/pages/dashboard"
+
+import DashboardPage from '@/components/pages/dashboard'
 import React from 'react'
 
 
