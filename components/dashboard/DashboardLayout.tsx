@@ -58,9 +58,14 @@ export default function DashboardLayoutComp({
           onMenuClick={() => setSidebarOpen(prev => !prev)}
         />
 
-        <main className="flex-1 overflow-y-auto md:p-6 p-4 bg-black">
+        <main className="flex-1 overflow-y-auto md:px-6 px-4 pt-4 md:pt-6 bg-black ">
           {children}
         </main>
+
+
+        {/* <main className="flex-1 overflow-y-auto md:p-6 p-4 bg-black">
+          {children}
+        </main> */}
       </div>
     </div>
   );
