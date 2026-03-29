@@ -12,7 +12,7 @@ export default function ResetPasswordPage() {
                 {/* LEFT SIDE - IMAGE */}
                 <div className="hidden lg:block flex-1 relative h-screen bg-red-300 max-w-[678px]">
                     <Image
-                        src="/images/auth/login1.png"
+                        src="/images/auth/login4.png"
                         alt="Login background"
                         fill
                         priority
