@@ -3,7 +3,7 @@ import { Controller, useFormContext } from "react-hook-form"
 
 
 
-// =============================== Simple Input ===============================
+// =================== Simple Input ==================
 interface SimpleInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string
     inputClassName?: string
