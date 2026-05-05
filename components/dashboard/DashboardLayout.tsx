@@ -13,23 +13,23 @@ import ChatIcon from '../icons/ChatIcon';
 import HandShakeIcon from '../icons/HandShakeIcon';
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 1, label: 'Home', href: '/', icon: HomeIcon },
-  { id: 2, label: 'Athletes Management', href: '/athletes', icon: AthletesIcon },
+  { id: 1, label: 'Home', href: '/dashboard', icon: HomeIcon },
+  { id: 2, label: 'Athletes Management', href: '/dashboard/athletes', icon: AthletesIcon },
   {
-    id: 3, label: 'Challenges', href: '/challenges', icon: ChallengesIcon, children: [
-      { id: 31, label: 'All Challenges', href: '/challenges/all', icon: ChallengesIcon },
-      { id: 32, label: 'Monthly Challenges', href: '/challenges/monthly', icon: ChallengesIcon },
-      { id: 33, label: 'Virtual Challenges', href: '/challenges/virtual', icon: ChallengesIcon },
-      { id: 34, label: 'Community Challenges', href: '/challenges/community', icon: ChallengesIcon },
-      { id: 35, label: 'Elite Challenges', href: '/challenges/elite', icon: ChallengesIcon },
+    id: 3, label: 'Challenges', href: '/', icon: ChallengesIcon, children: [
+      { id: 31, label: 'All Challenges', href: '/dashboard/challenges/all', icon: ChallengesIcon },
+      { id: 32, label: 'Monthly Challenges', href: '/dashboard/challenges/monthly', icon: ChallengesIcon },
+      { id: 33, label: 'Virtual Challenges', href: '/dashboard/challenges/virtual', icon: ChallengesIcon },
+      { id: 34, label: 'Community Challenges', href: '/dashboard/challenges/community', icon: ChallengesIcon },
+      { id: 35, label: 'Elite Challenges', href: '/dashboard/challenges/elite', icon: ChallengesIcon },
     ],
   },
-  { id: 4, label: 'Quotation Request', href: '/quotations-request', icon: QuotationIcon },
-  { id: 5, label: 'Support', href: '/support', icon: SupportIcon },
-  { id: 6, label: 'Sponsorship Hub', href: '/sponsorship-hub', icon: HandShakeIcon },
-  { id: 7, label: 'Chat', href: '/chat', icon: ChatIcon },
+  { id: 4, label: 'Quotation Request', href: '/dashboard/quotations-request', icon: QuotationIcon },
+  { id: 5, label: 'Support', href: '/dashboard/support', icon: SupportIcon },
+  { id: 6, label: 'Sponsorship Hub', href: '/dashboard/sponsorship-hub', icon: HandShakeIcon },
+  { id: 7, label: 'Chat', href: '/dashboard/chat', icon: ChatIcon },
   // { id: 8, label: 'Settings', href: '/settings', icon: SettingIcon },
-  { id: 8, label: 'Settings', href: '/settings', icon: SettingIcon },
+  { id: 8, label: 'Settings', href: '/dashboard/settings', icon: SettingIcon },
  
 ];
 

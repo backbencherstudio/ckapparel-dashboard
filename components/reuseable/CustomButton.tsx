@@ -10,6 +10,7 @@ interface CustomButtonProps {
   className?: string;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }
 
 export default function CustomButton({
@@ -20,6 +21,7 @@ export default function CustomButton({
   fullWidth = false,
   className,
   onClick,
+  disabled = false,
     ...props
 }: CustomButtonProps) {
   const baseStyle =
@@ -60,6 +62,7 @@ export default function CustomButton({
         className
       )}
       onClick={onClick}
+      disabled={disabled}
       {...props}
     >
       {children}
