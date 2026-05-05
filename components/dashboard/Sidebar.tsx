@@ -91,7 +91,7 @@ const NavMenu = ({
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-red-400 hover:bg-red-500/10"
         >
           <LogOut className="w-4 h-4" />
-          Logout
+          Log Out
         </button>
       </div>
     </div>

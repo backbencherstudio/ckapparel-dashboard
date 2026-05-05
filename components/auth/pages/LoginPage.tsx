@@ -4,8 +4,8 @@ import Image from "next/image";
 import { isDev } from "@/lib/constants/env";
 
 const DEFAULT_VALUES = {
-    email: isDev ? "" : "admin@limitless.com",
-    password: isDev ? "" : "123456"
+    email: isDev ? "sazed.admin@example.com" : "",
+    password: isDev ? "123456789" : ""
 }
 
 
@@ -77,14 +77,15 @@ function LoginFormComponent() {
         setError,
     } = useForm<LoginFormValues>({
         defaultValues: {
-            ...DEFAULT_VALUES   
+            ...DEFAULT_VALUES
         }
     });
 
     const onSubmit = async (values: LoginFormValues) => {
         try {
             await login(values);
-            //   router.push("/");
+            router.push("/dashboard");
+            router.refresh();
         } catch (err) {
             setError("root", {
                 message: err instanceof Error ? err.message : "Login failed",

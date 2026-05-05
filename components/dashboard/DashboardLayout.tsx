@@ -11,6 +11,8 @@ import SupportIcon from '../icons/SupportIcon';
 import SettingIcon from '../icons/SettingIcon';
 import ChatIcon from '../icons/ChatIcon';
 import HandShakeIcon from '../icons/HandShakeIcon';
+import { useAuthStore } from '@/store/authStore';
+import { useLogout } from '@/hooks/useLogout';
 
 const NAV_ITEMS: NavItem[] = [
   { id: 1, label: 'Home', href: '/dashboard', icon: HomeIcon },
@@ -39,9 +41,11 @@ export default function DashboardLayoutComp({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { handleLogout } = useLogout();
 
   const name = 'Admin';
   const panelLabel = 'Admin Panel';
+
 
   return (
     <div className="h-screen flex overflow-hidden">
@@ -50,7 +54,7 @@ export default function DashboardLayoutComp({
         onClose={() => setSidebarOpen(false)}
         navItems={NAV_ITEMS}
         panelLabel={panelLabel}
-        onLogout={() => { }}
+        onLogout={handleLogout}
       />
 
       <div className="flex flex-col flex-1 min-w-0">
