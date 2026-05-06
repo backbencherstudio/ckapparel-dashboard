@@ -3,123 +3,188 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { Upload, X } from "lucide-react";
+import { useEffect } from "react";
 import FormInput from "@/components/form/form-input";
 import { FormSelect } from "@/components/form/form-select";
+import { useGetSupportPlansTypes } from "@/hooks/useSupport";
 
 const schema = z.object({
-  planTitle: z.string().min(1, "Plan title is required"),
-  planSubtitle: z.string().min(1, "Plan subtitle is required"),
-  planCategory: z.string().min(1, "Plan category is required"),
-  planSubcategory: z.string().min(1, "Plan subcategory is required"),
-  file: z.any().optional(),
+  planTypeId: z.string().min(1, "Plan type is required"),
+  category: z.string().min(1, "Category is required"),
+  title: z.string().min(1, "Plan title is required"),
+  description: z.string().min(1, "Description is required"),
+  distance: z.string().optional(),
+  resourceFile: z
+    .any()
+    .optional()
+    .refine(
+      (file) =>
+        !file ||
+        file instanceof File &&
+          [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ].includes(file.type),
+      "Only PDF, DOC, or DOCX files are allowed"
+    ),
 });
 
 type FormValues = z.infer<typeof schema>;
 
 interface CreateSupportPlanFormProps {
-  onSubmit: (data: FormValues) => void;
+  onSubmit: (data: any) => void;
   onCancel?: () => void;
+  isSubmitting?: boolean;
+  mode?: "create" | "edit";
+  defaultData?: Partial<{
+    planTypeId: string;
+    category: string;
+    title: string;
+    description: string;
+    distance: string;
+  }>;
 }
 
-export default function PlanForm({ onSubmit, onCancel }: CreateSupportPlanFormProps) {
+export default function PlanForm({
+  onSubmit,
+  onCancel,
+  isSubmitting = false,
+  mode = "create",
+  defaultData,
+}: CreateSupportPlanFormProps) {
+  const { data: planTypesData, isLoading: isLoadingPlanTypes } = useGetSupportPlansTypes();
+  const planTypes = planTypesData || [];
+
   const methods = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      planTitle: "",
-      planSubtitle: "",
-      planCategory: "",
-      planSubcategory: "",
+      planTypeId: defaultData?.planTypeId ?? "",
+      category: defaultData?.category ?? "",
+      title: defaultData?.title ?? "",
+      description: defaultData?.description ?? "",
+      distance: defaultData?.distance ?? "",
+      resourceFile: undefined,
     },
   });
 
-  return (
-    // <div className="bg-[#0A0A0A] p-6 rounded-3xl w-full border border-white/10">
-    <div>
-      {/* Header */}
+  useEffect(() => {
+    methods.reset({
+      planTypeId: defaultData?.planTypeId ?? "",
+      category: defaultData?.category ?? "",
+      title: defaultData?.title ?? "",
+      description: defaultData?.description ?? "",
+      distance: defaultData?.distance ?? "",
+      resourceFile: undefined,
+    });
+  }, [defaultData, methods]);
+
+  const categoryOptions = [
+    { label: "Running", value: "RUNNING" },
+    { label: "HIIT", value: "HIIT" },
+    { label: "Cycling", value: "CYCLING" },
+    { label: "Swimming", value: "SWIMMING" },
+  ];
+
+  // category must be one of the following values: RUNNING, CYCLING, SWIMMING, HIIT"
+  const handleFormSubmit = (data: FormValues) => {
+    const submitData: any = {
+      planTypeId: data.planTypeId,
+      category: data.category,
+      title: data.title,
+      description: data.description,
+    };
     
+    if (data.distance) submitData.distance = Number(data.distance);
+    if (data.resourceFile) submitData.resource_url = data.resourceFile;
+    
+    onSubmit(submitData);
+  };
 
-      <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-5">
-          
-          <FormInput 
-            name="planTitle" 
-            label="Plan Title" 
-            placeholder="Jackson Graham" 
+  if (isLoadingPlanTypes) {
+    return (
+      <div className="space-y-5">
+        <div className="h-10 bg-gray-700 rounded animate-pulse"></div>
+        <div className="h-10 bg-gray-700 rounded animate-pulse"></div>
+        <div className="h-24 bg-gray-700 rounded animate-pulse"></div>
+      </div>
+    );
+  }
+
+  return (
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(handleFormSubmit)} className="space-y-5">
+        
+        <FormSelect
+          name="planTypeId"
+          label="Plan Type"
+          placeholder="Select plan type"
+          options={planTypes}
+        />
+
+        <FormSelect
+          name="category"
+          label="Category"
+          placeholder="Select category"
+          options={categoryOptions}
+        />
+
+        <FormInput 
+          name="title" 
+          label="Plan Title" 
+          placeholder="Enter plan title" 
+        />
+
+        <div className="space-y-2">
+          <label className="text-white text-sm font-medium block">Description</label>
+          <textarea
+            {...methods.register("description")}
+            placeholder="Enter plan description"
+            rows={3}
+            className="w-full bg-[#1f1f1f] border border-white/20 rounded-lg px-3 py-2 text-white placeholder:text-gray-500 focus:outline-none focus:border-[#F6D642] resize-none"
           />
-          
-          <FormInput 
-            name="planSubtitle" 
-            label="Plan Subtitle" 
-            placeholder="Jackson Graham" 
+          {methods.formState.errors.description && (
+            <p className="text-red-500 text-xs">{methods.formState.errors.description.message}</p>
+          )}
+        </div>
+
+        <FormInput 
+          name="distance" 
+          label="Distance (meters)" 
+          placeholder="Enter distance in meters"
+          type="number"
+        />
+
+        <div className="space-y-2">
+          <label className="text-white text-sm font-medium block">Resource File (PDF/DOC)</label>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={(e) => methods.setValue("resourceFile", e.target.files?.[0])}
+            className="w-full bg-[#1f1f1f] border border-white/20 rounded-lg px-3 py-2 text-white file:mr-3 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1 file:text-sm file:font-medium file:text-black"
           />
+          {methods.formState.errors.resourceFile && (
+            <p className="text-red-500 text-xs">{String(methods.formState.errors.resourceFile.message)}</p>
+          )}
+        </div>
 
-          <FormSelect
-            name="planCategory"
-            label="Plan Category"
-            placeholder="Jackson Graham"
-            options={[
-              { label: "Category 1", value: "cat1" },
-              { label: "Category 2", value: "cat2" },
-            ]}
-          />
-
-          <FormSelect
-            name="planSubcategory"
-            label="Plan Subcategory"
-            placeholder="Jackson Graham"
-            options={[
-              { label: "Subcategory 1", value: "sub1" },
-              { label: "Subcategory 2", value: "sub2" },
-            ]}
-          />
-
-          {/* File Upload */}
-          <div className="space-y-2">
-            <label className="text-white text-sm font-medium block">Upload file</label>
-            <div 
-              className="border border-dashed border-white/20 rounded-xl p-8 flex flex-col items-center justify-center bg-transparent hover:bg-white/5 transition-all cursor-pointer group"
-              onClick={() => document.getElementById('file-upload')?.click()}
-            >
-              <input 
-                id="file-upload"
-                type="file" 
-                className="hidden" 
-                onChange={(e) => methods.setValue('file', e.target.files?.[0])}
-              />
-              <Upload className="text-white mb-4" size={32} strokeWidth={1.5} />
-              <p className="text-neutral-400 text-sm text-center">
-                Drag and drop your file here, or <span className="text-white">click to browse</span>
-              </p>
-              <p className="text-neutral-500 text-xs mt-1">Supports CSV, XLSX (max 10MB)</p>
-              
-              <button 
-                type="button"
-                className="mt-4 px-4 py-1.5 border border-white rounded-lg text-white text-sm font-medium"
-              >
-                Choose file
-              </button>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-end items-center gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-8 py-2 rounded-lg border border-white text-white text-sm font-medium hover:bg-white/5 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-8 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-neutral-200 transition-colors"
-            >
-              Create Plan
-            </button>
-          </div>
-        </form>
-      </FormProvider>
-    </div>
+        <div className="flex justify-end items-center gap-3 pt-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-8 py-2 rounded-lg border border-white text-white text-sm font-medium hover:bg-white/5 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-8 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? `${mode === "edit" ? "Updating" : "Creating"}...` : `${mode === "edit" ? "Update Plan" : "Create Plan"}`}
+          </button>
+        </div>
+      </form>
+    </FormProvider>
   );
 }
