@@ -1,4 +1,8 @@
 export const queryKeys = {
+    athletes: {
+      list: ["athletes", "list"] as const,
+      details: ["athletes", "details"] as const,
+    },
     auth: {
       me: ["auth", "me"] as const,
     },

@@ -1,18 +1,11 @@
 'use client';
 
-import React from 'react'
-// import StatsCards from './StatsCards'
-// import RegisterdVsActive from './RegisterdVsActive'
-// import TotalParticipantPieChart from './TotalParticipantPieChart'
-// import AthleteTable from './AthleteTable'
+
 import ChallengesListTable from '../challenges/all-challenges/ChallengeList'
 import StatsCards from './StatsCards'
-import AthleteTable from './AthleteTable'
 import TotalParticipantPieChart from './TotalParticipantPieChart'
-
-import { RegistriesIndexParseError } from 'shadcn/registry'
 import RegisteredVsActive from './RegisterdVsActive'
-import { useDashboardCards } from '@/hooks/useDashboard'
+
 
 export default function DashboardPage() {
 
@@ -29,7 +22,7 @@ export default function DashboardPage() {
         </div>
       </div>
  
-      <ChallengesListTable />
+      {/* <ChallengesListTable /> */}
     </div>
   )
 }

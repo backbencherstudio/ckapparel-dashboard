@@ -133,7 +133,7 @@ export default function AthletePage() {
                         label: "All Countries",
                         value: country,
                         options: [
-                            { label: "All Countries", value: "all" },
+                            // { label: "All Countries", value: " " },
                             { label: "Australia", value: "Australia" },
                             { label: "USA", value: "USA" },
                         ],

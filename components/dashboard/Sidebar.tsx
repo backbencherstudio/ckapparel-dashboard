@@ -59,7 +59,7 @@ const NavMenu = ({
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   
-    router.push("dashboard/challenges/all");
+    router.push("/dashboard/challenges/all");
   };
 
   return (
