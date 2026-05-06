@@ -13,6 +13,7 @@ import ChatIcon from '../icons/ChatIcon';
 import HandShakeIcon from '../icons/HandShakeIcon';
 import { useAuthStore } from '@/store/authStore';
 import { useLogout } from '@/hooks/useLogout';
+import QueryProvider from '@/providers/QueryProvider';
 
 const NAV_ITEMS: NavItem[] = [
   { id: 1, label: 'Home', href: '/dashboard', icon: HomeIcon },
@@ -64,6 +65,9 @@ export default function DashboardLayoutComp({
         />
 
         <main className="flex-1 overflow-y-auto md:px-6 px-4 pt-4 md:pt-6 bg-black ">
+          <QueryProvider> 
+            {children}
+          </QueryProvider>
           {children}
         </main>
 

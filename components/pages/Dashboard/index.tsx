@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react'
 // import StatsCards from './StatsCards'
 // import RegisterdVsActive from './RegisterdVsActive'
@@ -10,8 +12,10 @@ import TotalParticipantPieChart from './TotalParticipantPieChart'
 
 import { RegistriesIndexParseError } from 'shadcn/registry'
 import RegisteredVsActive from './RegisterdVsActive'
+import { useDashboardCards } from '@/hooks/useDashboard'
 
 export default function DashboardPage() {
+
   return (
     <div className='space-y-[24px]'>
       <StatsCards />
