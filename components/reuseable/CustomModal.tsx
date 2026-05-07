@@ -38,7 +38,7 @@ export default function CustomModal({
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent
                 className={clsx(
-                    "sm:max-w-[687px]  self-stretch border [background:var(--Gray-Black-800,#07080B)] p-6 rounded-3xl border-solid border-[#2F2F2F] text-white ",
+                    "w-full sm:max-w-[687px]  self-stretch border [background:var(--Gray-Black-800,#07080B)] p-6 rounded-3xl border-solid border-[#2F2F2F] text-white ",
                     className
                 )}
 

@@ -13,3 +13,23 @@ export function formatDate(date: string) {
     day: 'numeric',
   });
 }
+
+
+
+
+// Format currency
+export function formatCurrency(amount: number, currency: string) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency
+  }).format(amount);
+};
+
+
+
+export function buildApiParams<T extends Record<string, unknown>>(params?: T): Partial<T> {
+  if (!params) return {} as Partial<T>;
+  return Object.fromEntries(
+    Object.entries(params).filter(([_, v]) => v !== undefined && v !== "" && v !== "all")
+  ) as Partial<T>;
+}

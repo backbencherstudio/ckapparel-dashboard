@@ -78,7 +78,7 @@ export const StatsCard = ({
         delta: number;
         direction: 'up' | 'down' | 'flat';
         percentage: number;
-    }
+    } | any
 }) => {
     // Determine color based on direction
     const getDirectionColor = () => {

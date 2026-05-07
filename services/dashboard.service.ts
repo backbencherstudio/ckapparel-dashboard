@@ -13,6 +13,8 @@ export const dashboardService = {
     return response.data as DashboardSummaryResponse;
   },
   
+
+  
   getAthletesTrend: async (months: MonthsRange = 12) => {
     const response = await axios.get(`/admin/dashboard/athletes-trend`, {
       params: { months }
