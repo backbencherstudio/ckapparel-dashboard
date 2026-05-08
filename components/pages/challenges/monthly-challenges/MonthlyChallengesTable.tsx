@@ -8,233 +8,240 @@ import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
 import CreateChallenge from "../all-challenges/CreateChallenge";
 import CreateChallengeForm from "../all-challenges/CreateChallengeForm";
 import CustomModal from "@/components/reuseable/CustomModal";
-
-type Challenge = {
-    name: string;
-    description: string;
-    type: "Main Event" | "Benchmark" | "Virtual";
-    difficulty: "hard" | "medium" | "easy";
-    participants: number;
-    reward: string;
-    status: "Active" | "Pending";
-};
-
-// dummy data
-const data: Challenge[] = [
-    {
-        name: "50KM Ultra Run",
-        description: "Complete 50km within 6 hours",
-        type: "Main Event",
-        difficulty: "hard",
-        participants: 56,
-        reward: "10000",
-        status: "Active",
-    },
-    {
-        name: "The Vertical 1000",
-        description: "November Main Event, 1,000m elev...",
-        type: "Main Event",
-        difficulty: "hard",
-        participants: 127,
-        reward: "10000",
-        status: "Active",
-    },
-    {
-        name: "Amazon Distance Run",
-        description: "6,400km virtual journey, Brazil",
-        type: "Virtual",
-        difficulty: "hard",
-        participants: 341,
-        reward: "10000",
-        status: "Active",
-    },
-    {
-        name: "Sunrise City Sprint",
-        description: "Community — G. Hernandez",
-        type: "Benchmark",
-        difficulty: "medium",
-        participants: 203,
-        reward: "10000",
-        status: "Pending",
-    },
-    {
-        name: "Beachside 10K",
-        description: "Early morning coastal run",
-        type: "Virtual",
-        difficulty: "medium",
-        participants: 89,
-        reward: "10000",
-        status: "Active",
-    },
-];
+import { useGetChallenges } from "@/hooks/useChallenges";
+import { Challenge } from "@/types/challenges.types";
+import { CHALLENGE_CATEGORY_OPTIONS, CHALLENGE_DIFFICULTY_OPTIONS, CHALLENGE_STATUS_OPTIONS } from "@/lib/constants/challeges";
 
 // get columns
 const getColumns = (
-    handleView: (row: Challenge) => void,
-    handleEdit: (row: Challenge) => void,
-    handleDelete: (row: Challenge) => void
+  handleView: (row: Challenge) => void,
+  handleEdit: (row: Challenge) => void,
+  handleDelete: (row: Challenge) => void
 ): Column<Challenge>[] => [
-        {
-            header: "Challenge",
-            cell: (row) => (
-                <div>
-                    <p className="font-medium text-white">{row.name}</p>
-                    <p className="text-xs text-neutral-500">{row.description}</p>
-                </div>
-            ),
-        },
-        { header: "Type", cell: (row) => <TableBadge variant={row.type}>{row.type}</TableBadge> },
-        { header: "Difficulty", cell: (row) => <TableBadge variant={row.difficulty}>{row.difficulty}</TableBadge> },
-        { header: "Participants", accessor: "participants", cell: (row) => <p className="text-xs text-neutral-400/80">{row.participants}</p> },
-        { header: "Reward", accessor: "reward", cell: (row) => <p className="text-xs text-neutral-500/90">{row.reward}</p> },
-        { header: "Status", cell: (row) => <TableBadge variant={row.status}>{row.status}</TableBadge> },
-        {
-            header: "Actions",
-            cell: (row) => (
-                <RowActions
-                    onView={() => handleView(row)}
-                    onEdit={() => handleEdit(row)}
-                    onDelete={() => handleDelete(row)}
-                />
-            ),
-        },
-    ];
-
+  {
+    header: "Challenge",
+    cell: (row) => (
+      <div>
+        <p className="font-medium text-white">{row.title}</p>
+        <p className="text-xs text-neutral-500">{row.subtitle}</p>
+      </div>
+    ),
+  },
+  { 
+    header: "Type", 
+    cell: (row) => <TableBadge variant={row.category}>{row.category}</TableBadge> 
+  },
+  { 
+    header: "Difficulty", 
+    cell: (row) => <TableBadge variant={row.difficulty.toLowerCase()}>{row.difficulty}</TableBadge> 
+  },
+  { 
+    header: "Participants", 
+    accessor: "participants", 
+    cell: (row) => <p className="text-xs text-neutral-400/80">{row.participants}</p> 
+  },
+  { 
+    header: "Reward", 
+    cell: (row) => <p className="text-xs text-neutral-500/90">-</p> 
+  },
+  { 
+    header: "Status", 
+    cell: (row) => <TableBadge variant={row.status.toLowerCase()}>{row.status}</TableBadge> 
+  },
+  {
+    header: "Actions",
+    cell: (row) => (
+      <RowActions
+        onView={() => handleView(row)}
+        // onEdit={() => handleEdit(row)}
+        onDelete={() => handleDelete(row)}
+      />
+    ),
+  },
+];
 
 // main component
 export default function MonthlyChallengesTable() {
-    const [search, setSearch] = useState("");
-    const [type, setType] = useState("");
-    const [difficulty, setDifficulty] = useState("");
-    const [status, setStatus] = useState("");
+  const [search, setSearch] = useState("");
+  const [type, setType] = useState("all");
+  const [difficulty, setDifficulty] = useState("all");
+  const [status, setStatus] = useState("all");
+  const [page, setPage] = useState(1);
 
-    const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
-    const [isView, setIsView] = useState(false);
-    const [isEdit, setIsEdit] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [isView, setIsView] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
-    const filtered = useMemo(() => {
-        return data.filter((r) => {
-            const matchesSearch = r.name.toLowerCase().includes(search.toLowerCase());
-            const matchesType = type ? r.type === type : true;
-            const matchesDifficulty = difficulty ? r.difficulty === difficulty : true;
-            const matchesStatus = status ? r.status === status : true;
+  // API call with filters - for monthly challenges specifically
+  const { data, isLoading, error } = useGetChallenges({
+    page,
+    limit: 20,
+    search: search || undefined,
+    path: "MONTHLY_CHALLENGE", // Filter for monthly challenges
+    category: type === "all" ? undefined : type,
+    difficulty: difficulty === "all" ? undefined : difficulty.toUpperCase(),
+    status: status 
+  });
 
-            return matchesSearch && matchesType && matchesDifficulty && matchesStatus;
-        });
-    }, [search, type, difficulty, status]);
+  const challenges = data?.items || [];
+  const total = data?.total || 0;
+  const totalPages = Math.ceil(total / 20);
 
+  // ========================== Open modals ==============================
+  const OpenView = (row: Challenge) => {
+    setIsView(true);
+    setSelectedChallenge(row);
+  }
 
-    // ========================== Open modals ==============================
+  const OpenEdit = (row: Challenge) => {
+    setIsEdit(true);
+    setSelectedChallenge(row);
+  }
 
-    const OpenView = (row: Challenge) => {
-        setIsView(true);
-        setSelectedChallenge(row);
-    }
+  const OpenDelete = (row: Challenge) => {
+    console.log("Open Delete", row);
+  }
 
-    const OpenEdit = (row: Challenge) => {
-        setIsEdit(true);
-        setSelectedChallenge(row);
-    }
+  // ========================== Handle api calls ==========================
+  const handleEdit = (data: Challenge) => {
+    console.log("Handle Edit api", data);
+    setIsEdit(false);
+  }
 
-    const OpenDelete = (row: Challenge) => {
-        console.log("Open Delete", row);
-    }
+  const handleDelete = (data: Challenge) => {
+    console.log("Handle Delete api", data);
+  }
 
-    // ========================== Handle api calls ==========================
-    const handleEdit = (data: Challenge) => {
-        console.log("Handle Edit api", data);
-        setIsEdit(false);
-    }
+  const handleCreate = (data: Challenge) => {
+    console.log("Handle Create api", data);
+  }
 
-    const handleDelete = (data: Challenge) => {
-        console.log("Handle Delete api", data);
-    }
-
-    const handleCreate = (data: Challenge) => {
-        console.log("Handle Create api", data);
-    }
-
-
+  if (isLoading) {
     return (
-        <div className="table-wrapper">
-            <TableToolbar
-                title="Challenge List"
-                onSearch={setSearch}
-                filters={[
-
-                    {
-                        key: "type",
-                        label: "All Types",
-                        options: [
-                            { label: "Main Event", value: "Main Event" },
-                            { label: "Benchmark", value: "Benchmark" },
-                            { label: "Virtual", value: "Virtual" },
-                        ],
-                        onChange: setType,
-                    },
-                    {
-                        key: "difficulty",
-                        label: "All Difficulties",
-                        options: [
-                            { label: "Hard", value: "hard" },
-                            { label: "Medium", value: "medium" },
-                            { label: "Easy", value: "easy" },
-                        ],
-                        onChange: setDifficulty,
-                    },
-                    
-                ]}
-            />
-
-            <DataTable columns={getColumns(OpenView, OpenEdit, OpenDelete)} data={filtered} />
-
-            {
-                isView &&
-
-                <CustomModal
-                    open={isView}
-                    onOpenChange={setIsView}
-                    onClose={() => setIsView(false)}
-                    title="View Challenge"
-                    customCloseButton={true}
-                    className="w-[480px]"
-                >
-                    <CreateChallengeForm
-                        mode="view"
-                        defaultData={{ challengeName: selectedChallenge?.name ?? "", challengeDescription: selectedChallenge?.description ?? "", challengeType: selectedChallenge?.type ?? "", difficultyLevel: selectedChallenge?.difficulty ?? "" }}
-                        onSubmit={(data) => handleEdit(data as unknown as Challenge)}
-                    />
-                </CustomModal>
-            }
-
-
-            {
-                isEdit &&
-
-                <CustomModal
-                    open={isEdit}
-                    onOpenChange={setIsEdit}
-                    onClose={() => setIsEdit(false)}
-                    title="Edit Challenge"
-                    customCloseButton={true}
-                    className="w-[480px]"
-                >
-
-
-                    <CreateChallengeForm
-                        mode="edit"
-                        defaultData={{
-                            challengeName: selectedChallenge?.name ?? "",
-                            challengeDescription: selectedChallenge?.description ?? "",
-                            challengeType: selectedChallenge?.type ?? "Main Event",
-                            difficultyLevel: selectedChallenge?.difficulty ?? "easy"
-                        }}
-                        onSubmit={(data) => handleEdit(data as unknown as Challenge)}
-                    />
-                </CustomModal>
-            }
+      <div className="table-wrapper">
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 bg-gray-700 rounded w-full"></div>
+          <div className="space-y-2">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="h-16 bg-gray-700/20 rounded"></div>
+            ))}
+          </div>
         </div>
+      </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="table-wrapper">
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-500 text-center">
+          Error loading monthly challenges: {error.message}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="table-wrapper">
+      <TableToolbar
+        title="Monthly Challenge List"
+        search={search}
+        onSearch={setSearch}
+        filters={[
+          {
+            key: "type",
+            label: "All Types",
+            options: [...CHALLENGE_CATEGORY_OPTIONS.map(option => ({ label: option.label, value: option.value }))],
+            value: type,
+            onChange: setType,
+          },
+          {
+            key: "difficulty",
+            label: "All Difficulties",
+            options: [...CHALLENGE_DIFFICULTY_OPTIONS.map(option => ({ label: option.label, value: option.value }))],
+            value: difficulty,
+            onChange: setDifficulty,
+          },
+          {
+            key: "status",
+            label: "All Status",
+            options: [...CHALLENGE_STATUS_OPTIONS.map(option => ({ label: option.label, value: option.value }))],
+            value: status,
+            onChange: setStatus,
+          },
+        ]}
+      />
+
+      <DataTable columns={getColumns(OpenView, OpenEdit, OpenDelete)} data={challenges} />
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-3 py-1 rounded border border-white/20 text-white disabled:opacity-50 hover:bg-white/5"
+          >
+            Previous
+          </button>
+          <span className="px-3 py-1 text-white">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage(p => p + 1)}
+            disabled={page === totalPages}
+            className="px-3 py-1 rounded border border-white/20 text-white disabled:opacity-50 hover:bg-white/5"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* View Modal */}
+      {isView && (
+        <CustomModal
+          open={isView}
+          onOpenChange={setIsView}
+          onClose={() => setIsView(false)}
+          title="View Challenge"
+          customCloseButton={true}
+          className="w-[480px]"
+        >
+          <CreateChallengeForm
+            mode="view"
+            defaultData={{ 
+              challengeName: selectedChallenge?.title ?? "", 
+              challengeDescription: selectedChallenge?.subtitle ?? "", 
+              challengeType: selectedChallenge?.category ?? "", 
+              difficultyLevel: selectedChallenge?.difficulty?.toLowerCase() ?? "" 
+            }} 
+            onSubmit={(data) => handleEdit(data as unknown as Challenge)}
+          />
+        </CustomModal>
+      )}
+
+      {/* Edit Modal */}
+      {isEdit && (
+        <CustomModal
+          open={isEdit}
+          onOpenChange={setIsEdit}
+          onClose={() => setIsEdit(false)}
+          title="Edit Challenge"
+          customCloseButton={true}
+          className="w-[480px]"
+        >
+          <CreateChallengeForm
+            mode="edit"
+            defaultData={{
+              challengeName: selectedChallenge?.title ?? "",
+              challengeDescription: selectedChallenge?.subtitle ?? "",
+              challengeType: selectedChallenge?.category ?? "RUNNING",
+              difficultyLevel: selectedChallenge?.difficulty?.toLowerCase() ?? "easy"
+            }}
+            onSubmit={(data) => handleEdit(data as unknown as Challenge)}
+          />
+        </CustomModal>
+      )}
+    </div>
+  );
 }
-
-
