@@ -59,7 +59,7 @@ const NavMenu = ({
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   
-    router.push("/challenges/all");
+    router.push("/dashboard/challenges/all");
   };
 
   return (
@@ -91,7 +91,7 @@ const NavMenu = ({
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-red-400 hover:bg-red-500/10"
         >
           <LogOut className="w-4 h-4" />
-          Logout
+          Log Out
         </button>
       </div>
     </div>
@@ -132,8 +132,8 @@ const NavLink = ({
 }) => {
   const pathname = usePathname();
   const isActive =
-  item.href === "/"
-    ? pathname === "/"                // exact match for home
+  item.href === "/dashboard"
+    ? pathname === "/dashboard"                // exact match for home
     : pathname.startsWith(item.href); // prefix match for everything else
   const hasChildren = item.children && item.children.length > 0;
   const isChildActive = item.children?.some(child => pathname === child.href);

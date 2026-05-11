@@ -1,12 +1,43 @@
+"use client";
+
 import React from 'react'
 
 import HandShakeIcon from '@/components/icons/HandShakeIcon'
 import PendingIcon from '@/components/icons/PendingIcon'
 import SuccessIcon from '@/components/icons/SuccessIcon'
 
+import { useGetSponsorshipHubSummary } from '@/hooks/useSponsorship'
+
 
 
 export default function SponsorshipStats() {
+    const { data, isLoading, error } = useGetSponsorshipHubSummary();
+    const sponsorshipHubSummary = data?.data;
+
+    if (isLoading) {
+        return (
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-[20px]'>
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className='bg-[#161616] p-4 border border-[#FFFFFF1A] rounded-xl animate-pulse'>
+                        <div className='h-[42px] w-[42px] bg-gray-700 rounded-full mb-4'></div>
+                        <div className='h-8 bg-gray-700 rounded w-20 mb-2'></div>
+                        <div className='h-4 bg-gray-700 rounded w-32'></div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-[20px]'>
+                <div className='bg-[#161616] p-4 border border-red-500 rounded-xl col-span-full text-red-500 text-center'>
+                    Error loading sponsorship data: {error.message}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className='grid grid-cols-1 md:grid-cols-3 gap-[20px]'>
             <StatsCard2 title='Open Listing' value='130' icon={<HandShakeIcon />} />

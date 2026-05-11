@@ -3,9 +3,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
-  { label: "General", href: "/settings/general" },
-  { label: "Password", href: "/settings/password" },
-  { label: "Notification", href: "/settings/notification" },
+  { label: "General", href: "/dashboard/settings/general" },
+  { label: "Password", href: "/dashboard/settings/password" },
+  { label: "Notification", href: "/dashboard/settings/notification" },
 ];
 
 export default function SettingsSidebar() {

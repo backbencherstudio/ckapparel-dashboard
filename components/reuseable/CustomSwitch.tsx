@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 interface CustomSwitchProps {
-  initialState?: boolean;
+  initialState?: boolean | number;
   onChange?: (enabled: boolean) => void;
 }
 

@@ -1,12 +1,14 @@
-import React from 'react'
+'use client';
+
+
+import ChallengesListTable from '../challenges/all-challenges/ChallengeList'
 import StatsCards from './StatsCards'
+import TotalParticipantPieChart from './TotalParticipantPieChart'
 import RegisteredVsActive from './RegisterdVsActive'
 
-import TotalParticipantPieChart from './TotalParticipantPieChart'
-import ChallengesListTable from '../challenges/all-challenges/ChallengeList'
-// import AthleteTable from './AthleteTable'
 
 export default function DashboardPage() {
+
   return (
     <div className='space-y-[24px]'>
       <StatsCards />
@@ -20,7 +22,7 @@ export default function DashboardPage() {
         </div>
       </div>
  
-      <ChallengesListTable />
+      {/* <ChallengesListTable /> */}
     </div>
   )
 }
