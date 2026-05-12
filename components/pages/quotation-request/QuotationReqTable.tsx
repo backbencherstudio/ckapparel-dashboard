@@ -7,58 +7,29 @@ import { Eye, FormInput } from "lucide-react";
 import CustomModal from "@/components/reuseable/CustomModal";
 import ViewDetails from "./ViewDetails";
 import ReplyForm from "./ReplyForm";
-// import ViewDetails from "./ViewDetails";
-
-// 1. Updated Type to match the Image
-type QuotationRequest = {
-    id: string;
-    athleteName: string;
-    avatar: string;
-    email: string;
-    date: string;
-    message: string;
-};
-
-// 2. Mock data reflecting the Image
-const data: QuotationRequest[] = [
-    {
-        id: "1",
-        athleteName: "T. Walsh",
-        avatar: "/avatars/user1.jpg",
-        email: "michael.mitc@example.com",
-        date: "Mar 14, 2026",
-        message: "I need a proper plan for my athletic journey so I can maintain consistent energy.",
-    },
-    {
-        id: "2",
-        athleteName: "J. Doe",
-        avatar: "/avatars/user2.jpg",
-        email: "john.doe@example.com",
-        date: "Mar 15, 2026",
-        message: "I need a proper plan for my athletic journey so I can maintain consistent energy.",
-    },
-    {
-        id: "3",
-        athleteName: "J. Doe",
-        avatar: "/avatars/user3.jpg",
-        email: "john.doe@example.com",
-        date: "Mar 15, 2026",
-        message: "I need a proper plan for my athletic journey so I can maintain consistent energy.",
-    },
-
-];
+import { useGetQuotations, useReplyToQuotation } from "@/hooks/useQuotation";
+import { QuotationRequest } from "@/types/quotation.types";
+import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
+import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 export default function QuotationReqTable() {
     const [search, setSearch] = useState("");
+    const [page, setPage] = useState(1);
     const [selectedRequest, setSelectedRequest] = useState<QuotationRequest | null>(null);
     const [isReplyOpen, setIsReplyOpen] = useState(false);
 
-    const filtered = useMemo(() => {
-        return data.filter((r) =>
-            r.athleteName.toLowerCase().includes(search.toLowerCase()) ||
-            r.email.toLowerCase().includes(search.toLowerCase())
-        );
-    }, [search]);
+    const [replyTargetId, setReplyTargetId] = useState<string | null>(null);
+
+    const { data, isLoading, error } = useGetQuotations({
+        page,
+        limit: 10,
+        search: search || undefined,
+    });
+
+    const filtered = data?.items || [];
+    const total = data?.total || 0;
+    const totalPages = Math.ceil(total / 10);
 
     // 3. Updated Columns to match "Athlete, Email, Date, Message, Actions"
     const columns: Column<QuotationRequest>[] = [
@@ -67,26 +38,28 @@ export default function QuotationReqTable() {
             cell: (row) => (
                 <div className="flex items-center gap-3">
                     <img
-                        src={row.avatar}
-                        alt={row.athleteName}
+                        src={row.avatar || "/avatars/default.jpg"}
+                        alt={row.user_name || "Unknown"}
                         className="w-8 h-8 rounded-full object-cover"
                     />
-                    <span className="font-medium text-white">{row.athleteName}</span>
+                    <span className="font-medium text-white">{row.user_name || "Unknown"}</span>
                 </div>
             ),
         },
-        { header: "Email", accessor: "email" },
+        { header: "Email", accessor: "user_email", cell: (row) => <span className="text-neutral-300">{row.user_email || row.email || "-"}</span> },
         {
             header: "Date",
-            accessor: "date",
-            cell: (row) => <span className="text-neutral-500">{row.date}</span>
+            cell: (row) => <span className="text-neutral-500">{row.created_at ? format(new Date(row.created_at), 'MMM dd, yyyy') : "-"}</span>
+        },
+        {
+            header: "Status",
+            cell: (row) => <TableBadge variant={row.status === 'completed' ? 'active' : row.status === 'pending' ? 'pending' : 'inactive'}>{row.status}</TableBadge>
         },
         {
             header: "Message",
-            accessor: "message",
             cell: (row) => (
                 <p className="max-w-[300px] truncate text-neutral-300">
-                    {row.message}
+                    {row.support_needed}
                 </p>
             )
         },
@@ -108,25 +81,73 @@ export default function QuotationReqTable() {
         setSelectedRequest(null);
     }
 
+    const replyMutation = useReplyToQuotation();
+
     const onReply = () => {
+        if (selectedRequest) {
+            setReplyTargetId(selectedRequest.id);
+        }
         setIsReplyOpen(true);
-        setSelectedRequest(null);
     }
 
-    const onSubmit = (data: any) => {
-        console.log(data);
-        setIsReplyOpen(false);
-        setSelectedRequest(null);
+    const onSubmit = (formData: any) => {
+        if (!replyTargetId) return;
+
+        const apiPayload = {
+            message: formData.message,
+            fullName: formData.fullName,
+            email: formData.email,
+            attachment: formData.file
+        };
+
+        toast.promise(
+            replyMutation.mutateAsync({ id: replyTargetId, payload: apiPayload }),
+            {
+                loading: "Sending reply...",
+                success: "Reply sent successfully!",
+                error: (err: any) => `Failed to send: ${err.response?.data?.message || err.message}`,
+            }
+        ).then(() => {
+            setIsReplyOpen(false);
+            setReplyTargetId(null);
+            setSelectedRequest(null);
+        });
     }
 
     const onCancel = () => {
         setIsReplyOpen(false);
+        setReplyTargetId(null);
     }
 
     const defaultData = {
-        fullName: selectedRequest?.athleteName,
-        email: selectedRequest?.email,
-        message: selectedRequest?.message,
+        fullName: selectedRequest?.user_name,
+        email: selectedRequest?.user_email || selectedRequest?.email,
+        message: selectedRequest?.support_needed,
+    };
+
+    if (isLoading) {
+        return (
+            <div className="table-wrapper">
+                <div className="animate-pulse space-y-4">
+                    <div className="h-10 bg-gray-700 rounded w-full"></div>
+                    <div className="space-y-2">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <div key={i} className="h-16 bg-gray-700/20 rounded"></div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="table-wrapper">
+                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-500 text-center">
+                    Error loading quotations: {(error as any).message}
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -142,6 +163,30 @@ export default function QuotationReqTable() {
                 columns={columns}
                 data={filtered}
             />
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex justify-end gap-2 mt-4">
+                    <button
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="px-3 py-1 rounded border border-white/20 text-white disabled:opacity-50 hover:bg-white/5"
+                    >
+                        Previous
+                    </button>
+                    <span className="px-3 py-1 text-white">
+                        Page {page} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() => setPage(p => p + 1)}
+                        disabled={page === totalPages}
+                        className="px-3 py-1 rounded border border-white/20 text-white disabled:opacity-50 hover:bg-white/5"
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
+
             {/* MODAL 1: VIEW DETAILS */}
 
             <CustomModal

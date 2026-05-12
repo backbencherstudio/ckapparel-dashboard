@@ -3,8 +3,10 @@ import { SimpleInput } from "@/components/form/form-input";
 import { SimpleTextarea } from "@/components/form/form-textarea";
 import { Mail } from "lucide-react";
 
+import { QuotationRequest } from "@/types/quotation.types";
+
 interface ViewDetailsProps {
-  selectedAthletes: any; // Replace with your QuotationRequest type
+  selectedAthletes: QuotationRequest | null;
   onClose?: () => void;
   onReply?: () => void;
 }
@@ -18,7 +20,7 @@ export default function ViewDetails({ selectedAthletes, onClose, onReply }: View
       <div className="flex flex-col gap-2">
        <SimpleInput
           label="Full Name"
-          value={selectedAthletes.athleteName || selectedAthletes.name}
+          value={selectedAthletes.user_name || "Unknown"}
           inputClassName="flex items-center gap-1 self-stretch border border-[color:var(--Opacity-Grey-Dark-50,rgba(101,104,114,0.50))] [background:var(--color-grey-15,#262626)] px-2 !py-3.5 rounded-lg border-solid focus:border-white/10"
           readOnly
         />
@@ -31,7 +33,7 @@ export default function ViewDetails({ selectedAthletes, onClose, onReply }: View
 
         <SimpleInput
           label="Email"
-          value={selectedAthletes.email}
+          value={selectedAthletes.user_email || selectedAthletes.email}
           inputClassName="flex items-center gap-1 self-stretch border border-[color:var(--Opacity-Grey-Dark-50,rgba(101,104,114,0.50))] [background:var(--color-grey-15,#262626)] px-2 !py-3.5 rounded-lg border-solid focus:border-white/10"
           
           readOnly
@@ -43,7 +45,7 @@ export default function ViewDetails({ selectedAthletes, onClose, onReply }: View
        
         <SimpleTextarea
           label="Message"
-          value={selectedAthletes.message}
+          value={selectedAthletes.support_needed || ""}
           textareaClassName="flex items-center gap-1 self-stretch border border-[color:var(--Opacity-Grey-Dark-50,rgba(101,104,114,0.50))] [background:var(--color-grey-15,#262626)] px-2 !py-3.5 rounded-lg border-solid focus:border-white/10"
           readOnly
         />
