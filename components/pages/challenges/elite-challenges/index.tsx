@@ -7,9 +7,9 @@ export default function EliteChallengesPage() {
   return (
     <div>
         <PageTitle
-        title='Virtual Adventure'
+        title='Elite Challenges'
         description='Admin-created only'
-        action={<CreateChallenge  />}
+        action={<CreateChallenge challengeType="elite" />}
       />
 
       <EliteChallengesTable />

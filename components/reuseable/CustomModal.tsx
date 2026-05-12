@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import clsx from "clsx";
 import { Button } from "../ui/button";
 import { XIcon } from "lucide-react";
@@ -45,14 +45,15 @@ export default function CustomModal({
                 showCloseButton={!hideCloseButton}
             // closeClassName={closeButtonClassName}
             >
+                <DialogDescription className="sr-only">
+                    {title || "Modal dialog"}
+                </DialogDescription>
                 <div className="flex justify-between items-center ">
                     <div className="" >
                         {title && (
-
-                            <h3 className="text-white font-medium leading-[128%] tracking-[-0.36px] text-[24px] ">
+                            <DialogTitle className="text-white font-medium leading-[128%] tracking-[-0.36px] text-[24px] ">
                                 {title}
-                            </h3>
-
+                            </DialogTitle>
                         )}
                     </div>
                     {customCloseButton && (

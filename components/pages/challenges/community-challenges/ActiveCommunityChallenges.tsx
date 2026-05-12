@@ -1,128 +1,79 @@
 "use client";
+// UPDATED BY ANTIGRAVITY
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import DataTable, { Column } from "@/components/reuseable/data-table/DataTable";
 import TableToolbar from "@/components/reuseable/data-table/TableToolbar";
 import RowActions from "@/components/reuseable/data-table/TableRowActions";
 import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
-// import CreateChallenge from "./CreateChallenge";
-// import CreateChallengeForm from "./CreateChallengeForm";
-import CustomModal from "@/components/reuseable/CustomModal";
 import CreateChallengeForm from "../all-challenges/CreateChallengeForm";
-
-type Challenge = {
-    name: string;
-    description: string;
-    createdBy: string;
-    category: string;
-    difficulty: "hard" | "medium" | "easy";
-    submitedAt: string;
-    participants: number;
-};
-
-// dummy data
-const data: Challenge[] = [
-    {
-        name: "50KM Ultra Run",
-        description: "Complete 50km within 6 hours",
-        category: "running",
-        difficulty: "hard",
-        participants: 56,
-        createdBy: "Admin",
-        submitedAt: "2026-03-26",
-    },
-    {
-        name: "The Vertical 1000",
-        description: "November Main Event, 1,000m elev...",
-        category: "swimming",
-        difficulty: "hard",
-        participants: 127,
-        createdBy: "Admin",
-        submitedAt: "2026-03-26",
-    },
-    {
-        name: "Amazon Distance Run",
-        description: "6,400km virtual journey, Brazil",
-        category: "cycling",
-        difficulty: "hard",
-        participants: 341,
-        createdBy: "Admin",
-        submitedAt: "2026-03-26",
-    },
-    {
-        name: "Sunrise City Sprint",
-        description: "Community — G. Hernandez",
-        category: "running",
-        difficulty: "medium",
-        participants: 203,
-        createdBy: "G. Hernandez",
-        submitedAt: "2026-03-26",
-    },
-    {
-        name: "Beachside 10K",
-        description: "Early morning coastal run",
-        category: "cycling",
-        difficulty: "medium",
-        participants: 89,
-        createdBy: "Admin",
-        submitedAt: "2026-03-26",
-    },
-];
-
-// get columns
-const getColumns = (
-    handleView: (row: Challenge) => void,
-    handleDelete: (row: Challenge) => void
-): Column<Challenge>[] => [
-        {
-            header: "Challenge",
-            cell: (row) => (
-                <div>
-                    <p className="font-medium text-white">{row.name}</p>
-                    <p className="text-xs text-neutral-500">{row.description}</p>
-                </div>
-            ),
-        },
-        { header: "Category", cell: (row) => <p className="text-xs text-neutral-400/80 capitalize">{row.category}</p> },
-        { header: "Difficulty", cell: (row) => <TableBadge variant={row.difficulty}>{row.difficulty}</TableBadge> },
-        { header: "Participants", accessor: "participants" },
-        { header: "Created By", accessor: "createdBy" },
-        { header: "Submitted At", accessor: "submitedAt", cell: (row) => <p className="text-xs text-neutral-400/80">{row.submitedAt}</p> },
-        {
-            header: "Actions",
-            cell: (row) => (
-                <RowActions
-                    onView={() => handleView(row)}
-
-                    onDelete={() => handleDelete(row)}
-                />
-            ),
-        },
-    ];
-
+import CustomModal from "@/components/reuseable/CustomModal";
+import { useGetChallenges, useDeleteChallenge, useUpdateChallenge } from "@/hooks/useChallenges";
+import { Challenge, CreateChallengePayload } from "@/types/challenges.types";
+import { CHALLENGE_CATEGORY_OPTIONS, CHALLENGE_DIFFICULTY_OPTIONS } from "@/lib/constants/challeges";
+import toast from "react-hot-toast";
 
 // main component
 export default function ActiveCommunityChallenges() {
     const [search, setSearch] = useState("");
-    const [category, setCategory] = useState("");
-    const [difficulty, setDifficulty] = useState("");
-    const [createdBy, setCreatedBy] = useState("");
+    const [category, setCategory] = useState("all");
+    const [difficulty, setDifficulty] = useState("all");
+    const [page, setPage] = useState(1);
 
     const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
     const [isView, setIsView] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
 
-    const filtered = useMemo(() => {
-        return data.filter((r) => {
-            const matchesSearch = r.name.toLowerCase().includes(search.toLowerCase());
-            const matchesCategory = category ? r.category === category : true;
-            const matchesDifficulty = difficulty ? r.difficulty === difficulty : true;
-            const matchesCreatedBy = createdBy ? r.createdBy === createdBy : true;
+    // API call with filters
+    const { data, isLoading, error } = useGetChallenges({
+        page,
+        limit: 20,
+        search: search || undefined,
+        category: category === "all" ? undefined : category,
+        difficulty: difficulty === "all" ? undefined : difficulty.toUpperCase(),
+        status: "ACTIVE",
+        path: "COMMUNITY_CHALLENGE",
+    });
 
-            return matchesSearch && matchesCategory && matchesDifficulty && matchesCreatedBy;
-        });
-    }, [search, category, difficulty, createdBy]);
+    const deleteMutation = useDeleteChallenge();
+    const updateMutation = useUpdateChallenge();
 
+    const challenges = data?.items || [];
+    const total = data?.total || 0;
+    const totalPages = Math.ceil(total / 20);
+
+    const filtered = challenges;
+
+    // get columns definition inside component
+    const getColumns = (
+        handleView: (row: Challenge) => void,
+        handleEdit: (row: Challenge) => void,
+        handleDelete: (row: Challenge) => void
+    ): Column<Challenge>[] => [
+            {
+                header: "Challenge",
+                cell: (row) => (
+                    <div>
+                        <p className="font-medium text-white">{row.title}</p>
+                        <p className="text-xs text-neutral-500">{row.subtitle}</p>
+                    </div>
+                ),
+            },
+            { header: "Category", cell: (row) => <p className="text-xs text-neutral-400/80 capitalize">{row.category}</p> },
+            { header: "Difficulty", cell: (row) => <TableBadge variant={row.difficulty.toLowerCase()}>{row.difficulty}</TableBadge> },
+            { header: "Participants", accessor: "participants" },
+            { header: "Created By", accessor: "createdBy" },
+            {
+                header: "Actions",
+                cell: (row) => (
+                    <RowActions
+                        onView={() => handleView(row)}
+                        onEdit={() => handleEdit(row)}
+                        onDelete={() => handleDelete(row)}
+                    />
+                ),
+            },
+        ];
 
     // ========================== Open modals ==============================
 
@@ -137,23 +88,65 @@ export default function ActiveCommunityChallenges() {
     }
 
     const OpenDelete = (row: Challenge) => {
-        console.log("Open Delete", row);
+        if (window.confirm("Are you sure you want to delete this challenge?")) {
+            handleDelete(row);
+        }
     }
 
     // ========================== Handle api calls ==========================
-    const handleEdit = (data: Challenge) => {
-        console.log("Handle Edit api", data);
-        setIsEdit(false);
+    const handleEdit = (formData: any) => {
+        if (!selectedChallenge) return;
+
+        const payload: CreateChallengePayload = {
+            title: formData.challengeName,
+            subtitle: formData.challengeDescription,
+            category: formData.challengeType,
+            difficulty: formData.difficultyLevel.toUpperCase() as any,
+        };
+
+        toast.promise(
+            updateMutation.mutateAsync({ id: selectedChallenge.id, payload }),
+            {
+                loading: "Updating challenge...",
+                success: "Challenge updated successfully!",
+                error: (err) => `Failed to update: ${err.message}`,
+            }
+        ).then(() => {
+            setIsEdit(false);
+        });
     }
 
     const handleDelete = (data: Challenge) => {
-        console.log("Handle Delete api", data);
+        toast.promise(
+            deleteMutation.mutateAsync(data.id),
+            {
+                loading: "Deleting challenge...",
+                success: "Challenge deleted successfully!",
+                error: (err) => `Failed to delete: ${err.message}`,
+            }
+        );
     }
 
-    const handleCreate = (data: Challenge) => {
-        console.log("Handle Create api", data);
+    if (isLoading) {
+        return (
+            <div className="table-wrapper">
+                <div className="animate-pulse space-y-4">
+                    <div className="h-10 bg-gray-700 rounded w-full"></div>
+                    {[1, 2, 3, 4, 5].map(i => (
+                        <div key={i} className="h-16 bg-gray-700/20 rounded"></div>
+                    ))}
+                </div>
+            </div>
+        );
     }
 
+    if (error) {
+        return (
+            <div className="table-wrapper text-red-500 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                Error loading community challenges: {error.message}
+            </div>
+        );
+    }
 
     return (
         <div className="table-wrapper">
@@ -164,30 +157,45 @@ export default function ActiveCommunityChallenges() {
                     {
                         key: "category",
                         label: "All Categories",
-                        options: [
-                            { label: "Elite", value: "Elite" },
-                            { label: "Monthly", value: "Monthly" },
-                            { label: "Virtual", value: "Virtual" },
-                            { label: "Community", value: "Community" },
-                        ],
+                        options: CHALLENGE_CATEGORY_OPTIONS.map(opt => ({ label: opt.label, value: opt.value })),
                         onChange: setCategory,
+                        value: category,
                     },
                     {
                         key: "difficulty",
                         label: "All Difficulties",
-                        options: [
-                            { label: "Hard", value: "hard" },
-                            { label: "Medium", value: "medium" },
-                            { label: "Easy", value: "easy" },
-                        ],
+                        options: CHALLENGE_DIFFICULTY_OPTIONS.map(opt => ({ label: opt.label, value: opt.value })),
                         onChange: setDifficulty,
+                        value: difficulty,
                     },
-
                 ]}
             />
 
             <DataTable
-                columns={getColumns(OpenView, OpenDelete)} data={filtered} />
+                columns={getColumns(OpenView, OpenEdit, OpenDelete)} data={filtered} />
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex justify-end gap-2 mt-4">
+                    <button
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="px-3 py-1 rounded border border-white/20 text-white disabled:opacity-50 hover:bg-white/5"
+                    >
+                        Previous
+                    </button>
+                    <span className="px-3 py-1 text-white">
+                        Page {page} of {totalPages}
+                    </span>
+                    <button
+                        onClick={() => setPage(p => p + 1)}
+                        disabled={page === totalPages}
+                        className="px-3 py-1 rounded border border-white/20 text-white disabled:opacity-50 hover:bg-white/5"
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
 
             {
                 isView &&
@@ -202,7 +210,12 @@ export default function ActiveCommunityChallenges() {
                 >
                     <CreateChallengeForm
                         mode="view"
-                        defaultData={{ challengeName: selectedChallenge?.name ?? "", challengeDescription: selectedChallenge?.description ?? "", challengeType: selectedChallenge?.category ?? "", difficultyLevel: selectedChallenge?.difficulty ?? "" }}
+                        defaultData={{ 
+                            challengeName: selectedChallenge?.title ?? "", 
+                            challengeDescription: selectedChallenge?.subtitle ?? "", 
+                            challengeType: selectedChallenge?.category ?? "", 
+                            difficultyLevel: selectedChallenge?.difficulty?.toLowerCase() ?? "" 
+                        }}
                         onSubmit={(data) => handleEdit(data as unknown as Challenge)}
                     />
                 </CustomModal>
@@ -225,10 +238,10 @@ export default function ActiveCommunityChallenges() {
                     <CreateChallengeForm
                         mode="edit"
                         defaultData={{
-                            challengeName: selectedChallenge?.name ?? "",
-                            challengeDescription: selectedChallenge?.description ?? "",
-                            challengeType: selectedChallenge?.category ?? "challengeType1",
-                            difficultyLevel: selectedChallenge?.difficulty ?? "easy"
+                            challengeName: selectedChallenge?.title ?? "",
+                            challengeDescription: selectedChallenge?.subtitle ?? "",
+                            challengeType: selectedChallenge?.category ?? "",
+                            difficultyLevel: selectedChallenge?.difficulty?.toLowerCase() ?? "easy"
                         }}
                         onSubmit={(data) => handleEdit(data as unknown as Challenge)}
                     />
@@ -237,5 +250,3 @@ export default function ActiveCommunityChallenges() {
         </div>
     );
 }
-
-

@@ -7,7 +7,8 @@ import RowActions from "@/components/reuseable/data-table/TableRowActions";
 import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
 import CustomModal from "@/components/reuseable/CustomModal";
 import CreateChallengeForm from "../all-challenges/CreateChallengeForm";
-import { useGetChallenges } from "@/hooks/useChallenges";
+import { useGetChallenges, useUpdateChallenge, useDeleteChallenge } from "@/hooks/useChallenges";
+import toast from "react-hot-toast";
 import { Challenge } from "@/types/challenges.types";
 import { CHALLENGE_CATEGORY_OPTIONS, CHALLENGE_DIFFICULTY_OPTIONS, CHALLENGE_STATUS_OPTIONS } from "@/lib/constants/challeges";
 
@@ -94,14 +95,44 @@ export default function EliteChallengesTable() {
     console.log("Open Delete", row);
   }
 
-  // ========================== Handle api calls ==========================
+  const updateMutation = useUpdateChallenge();
+  const deleteMutation = useDeleteChallenge();
+
   const handleEdit = (data: Challenge) => {
-    console.log("Handle Edit api", data);
-    setIsEdit(false);
+    const formData = data as any;
+    if (!selectedChallenge) return;
+    
+    const payload: any = {
+      title: formData.challengeName,
+      subtitle: formData.challengeDescription,
+      category: formData.challengeType,
+      difficulty: formData.difficultyLevel?.toUpperCase() || 'EASY',
+      is_active: true,
+    };
+
+    toast.promise(
+      updateMutation.mutateAsync({ id: selectedChallenge.id, payload }),
+      {
+        loading: "Updating challenge...",
+        success: "Challenge updated successfully!",
+        error: (err: any) => `Failed to update: ${err.response?.data?.message || err.message}`,
+      }
+    ).then(() => {
+      setIsEdit(false);
+    });
   }
 
-  const handleDelete = (data: Challenge) => {
-    console.log("Handle Delete api", data);
+  const handleDelete = (row: Challenge) => {
+    if (window.confirm(`Are you sure you want to delete "${row.title}"?`)) {
+      toast.promise(
+        deleteMutation.mutateAsync(row.id),
+        {
+          loading: "Deleting challenge...",
+          success: "Challenge deleted successfully!",
+          error: (err: any) => `Failed to delete: ${err.response?.data?.message || err.message}`,
+        }
+      );
+    }
   }
 
   if (isLoading) {
@@ -168,7 +199,7 @@ export default function EliteChallengesTable() {
       />
 
       <DataTable
-        columns={getColumns(OpenView, OpenDelete)} 
+        columns={getColumns(OpenView, handleDelete)} 
         data={challenges} 
       />
 

@@ -6,7 +6,8 @@ import TableToolbar from "@/components/reuseable/data-table/TableToolbar";
 import RowActions from "@/components/reuseable/data-table/TableRowActions";
 import CustomModal from "@/components/reuseable/CustomModal";
 import CreateChallengeForm from "../all-challenges/CreateChallengeForm";
-import { useGetChallenges } from "@/hooks/useChallenges";
+import { useGetChallenges, useUpdateChallenge, useDeleteChallenge } from "@/hooks/useChallenges";
+import toast from "react-hot-toast";
 import { Challenge } from "@/types/challenges.types";
 import { CHALLENGE_CATEGORY_OPTIONS, CHALLENGE_DIFFICULTY_OPTIONS, CHALLENGE_STATUS_OPTIONS } from "@/lib/constants/challeges";
 
@@ -88,13 +89,43 @@ export default function VirtualChallengesTable() {
     setIsEdit(true);
   };
 
+  const updateMutation = useUpdateChallenge();
+  const deleteMutation = useDeleteChallenge();
+
   const handleDelete = (row: Challenge) => {
-    console.log("Delete logic here", row);
+    if (window.confirm(`Are you sure you want to delete "${row.title}"?`)) {
+      toast.promise(
+        deleteMutation.mutateAsync(row.id),
+        {
+          loading: "Deleting challenge...",
+          success: "Challenge deleted successfully!",
+          error: (err: any) => `Failed to delete: ${err.response?.data?.message || err.message}`,
+        }
+      );
+    }
   };
 
   const handleEditSubmit = (formData: any) => {
-    console.log("Submit updated data:", formData);
-    setIsEdit(false);
+    if (!selectedChallenge) return;
+    
+    const payload: any = {
+      title: formData.challengeName,
+      subtitle: formData.challengeDescription,
+      category: formData.challengeType,
+      difficulty: formData.difficultyLevel.toUpperCase(),
+      is_active: true,
+    };
+
+    toast.promise(
+      updateMutation.mutateAsync({ id: selectedChallenge.id, payload }),
+      {
+        loading: "Updating challenge...",
+        success: "Challenge updated successfully!",
+        error: (err: any) => `Failed to update: ${err.response?.data?.message || err.message}`,
+      }
+    ).then(() => {
+      setIsEdit(false);
+    });
   };
 
   if (isLoading) {

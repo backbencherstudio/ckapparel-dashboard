@@ -8,7 +8,8 @@ import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
 import CreateChallenge from "../all-challenges/CreateChallenge";
 import CreateChallengeForm from "../all-challenges/CreateChallengeForm";
 import CustomModal from "@/components/reuseable/CustomModal";
-import { useGetChallenges } from "@/hooks/useChallenges";
+import { useGetChallenges, useUpdateChallenge, useDeleteChallenge } from "@/hooks/useChallenges";
+import toast from "react-hot-toast";
 import { Challenge } from "@/types/challenges.types";
 import { CHALLENGE_CATEGORY_OPTIONS, CHALLENGE_DIFFICULTY_OPTIONS, CHALLENGE_STATUS_OPTIONS } from "@/lib/constants/challeges";
 
@@ -53,7 +54,7 @@ const getColumns = (
     cell: (row) => (
       <RowActions
         onView={() => handleView(row)}
-        // onEdit={() => handleEdit(row)}
+        onEdit={() => handleEdit(row)}
         onDelete={() => handleDelete(row)}
       />
     ),
@@ -102,14 +103,46 @@ export default function MonthlyChallengesTable() {
     console.log("Open Delete", row);
   }
 
-  // ========================== Handle api calls ==========================
+  const updateMutation = useUpdateChallenge();
+  const deleteMutation = useDeleteChallenge();
+
   const handleEdit = (data: Challenge) => {
-    console.log("Handle Edit api", data);
-    setIsEdit(false);
+    // Note: The form actually submits "formData" object with challengeName, etc.
+    // If the form passes the generic form values instead of Challenge object, we map it:
+    const formData = data as any;
+    if (!selectedChallenge) return;
+    
+    const payload: any = {
+      title: formData.challengeName,
+      subtitle: formData.challengeDescription,
+      category: formData.challengeType,
+      difficulty: formData.difficultyLevel?.toUpperCase() || 'EASY',
+      is_active: true,
+    };
+
+    toast.promise(
+      updateMutation.mutateAsync({ id: selectedChallenge.id, payload }),
+      {
+        loading: "Updating challenge...",
+        success: "Challenge updated successfully!",
+        error: (err: any) => `Failed to update: ${err.response?.data?.message || err.message}`,
+      }
+    ).then(() => {
+      setIsEdit(false);
+    });
   }
 
-  const handleDelete = (data: Challenge) => {
-    console.log("Handle Delete api", data);
+  const handleDelete = (row: Challenge) => {
+    if (window.confirm(`Are you sure you want to delete "${row.title}"?`)) {
+      toast.promise(
+        deleteMutation.mutateAsync(row.id),
+        {
+          loading: "Deleting challenge...",
+          success: "Challenge deleted successfully!",
+          error: (err: any) => `Failed to delete: ${err.response?.data?.message || err.message}`,
+        }
+      );
+    }
   }
 
   const handleCreate = (data: Challenge) => {
@@ -172,7 +205,7 @@ export default function MonthlyChallengesTable() {
         ]}
       />
 
-      <DataTable columns={getColumns(OpenView, OpenEdit, OpenDelete)} data={challenges} />
+      <DataTable columns={getColumns(OpenView, OpenEdit, handleDelete)} data={challenges} />
 
       {/* Pagination */}
       {totalPages > 1 && (

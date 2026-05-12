@@ -6,14 +6,15 @@ import { FormSelect } from "@/components/form/form-select";
 import { FormProvider, useForm } from "react-hook-form";
 import FormInput from "@/components/form/form-input";
 import CustomButton from "@/components/reuseable/CustomButton";
+import { CHALLENGE_CATEGORY_OPTIONS, CHALLENGE_DIFFICULTY_OPTIONS } from "@/lib/constants/challeges";
 
 const schema = z.object({
     challengeName: z.string()
         .min(1, "Challenge name is required")
-        .max(50, "Challenge name must be less than 50 characters"),
+        .max(100, "Challenge name must be less than 100 characters"),
     challengeDescription: z.string()
         .min(1, "Challenge description is required")
-        .max(200, "Challenge description must be less than 200 characters"),
+        .max(1000, "Challenge description must be less than 1000 characters"),
     challengeType: z.string()
         .min(1, "Challenge type is required"),
     difficultyLevel: z.string()
@@ -64,16 +65,15 @@ export default function CreateChallengeForm({ mode = "create", defaultData, onSu
                     name="challengeType"
                     label="Challenge Type"
                     placeholder="Select challenge type"
-                    options={[{ label: "Challenge Type 1", value: "challengeType1" }, { label: "Challenge Type 2", value: "challengeType2" }]}
+                    options={CHALLENGE_CATEGORY_OPTIONS.filter(opt => opt.value !== "all")}
                     disabled={isView}
                 />
                 <FormSelect
                     name="difficultyLevel"
                     label="Difficulty Level"
                     placeholder="Select difficulty level"
-                    options={[{ label: "Easy", value: "easy" }, { label: "Medium", value: "medium" }, { label: "Hard", value: "hard" }]}
+                    options={CHALLENGE_DIFFICULTY_OPTIONS.filter(opt => opt.value !== "all")}
                     disabled={isView}
-
                 />
 
                 {!isView && (

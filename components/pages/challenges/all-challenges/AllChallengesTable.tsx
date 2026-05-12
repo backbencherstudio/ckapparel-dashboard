@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import DataTable, { Column } from "@/components/reuseable/data-table/DataTable";
 import TableToolbar from "@/components/reuseable/data-table/TableToolbar";
 import RowActions from "@/components/reuseable/data-table/TableRowActions";
@@ -8,50 +8,10 @@ import { TableBadge } from "@/components/reuseable/data-table/TableBadge";
 import CreateChallenge from "./CreateChallenge";
 import CreateChallengeForm from "./CreateChallengeForm";
 import CustomModal from "@/components/reuseable/CustomModal";
-import { useGetChallenges } from "@/hooks/useChallenges";
-import { Challenge } from "@/types/challenges.types";
+import { useGetChallenges, useDeleteChallenge, useUpdateChallenge } from "@/hooks/useChallenges";
+import { Challenge, CreateChallengePayload } from "@/types/challenges.types";
 import { CHALLENGE_CATEGORY_OPTIONS, CHALLENGE_DIFFICULTY_OPTIONS, CHALLENGE_STATUS_OPTIONS } from "@/lib/constants/challeges";
-
-// get columns
-const getColumns = (
-  handleView: (row: Challenge) => void,
-  handleEdit: (row: Challenge) => void,
-  handleDelete: (row: Challenge) => void
-): Column<Challenge>[] => [
-    {
-      header: "Challenge",
-      cell: (row) => (
-        <div>
-          <p className="font-medium text-white">{row.title}</p>
-          <p className="text-xs text-neutral-500">{row.subtitle}</p>
-        </div>
-      ),
-    },
-    {
-      header: "Category",
-      cell: (row) => <TableBadge variant={row.category}>{row.category}</TableBadge>
-    },
-    {
-      header: "Difficulty",
-      cell: (row) => <TableBadge variant={row.difficulty.toLowerCase()}>{row.difficulty}</TableBadge>
-    },
-    { header: "Participants", accessor: "participants" },
-    { header: "Created By", accessor: "createdBy" },
-    {
-      header: "Status",
-      cell: (row) => <TableBadge variant={row.status.toLowerCase()}>{row.status}</TableBadge>
-    },
-    {
-      header: "Actions",
-      cell: (row) => (
-        <RowActions
-          onView={() => handleView(row)}
-          onEdit={() => handleEdit(row)}
-          onDelete={() => handleDelete(row)}
-        />
-      ),
-    },
-  ];
+import toast from "react-hot-toast";
 
 // main component
 export default function AllChallengesTable() {
@@ -75,12 +35,55 @@ export default function AllChallengesTable() {
     status: status === "all" ? undefined : status.toUpperCase(),
   });
 
+  const deleteMutation = useDeleteChallenge();
+  const updateMutation = useUpdateChallenge();
+
   const challenges = data?.items || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / 20);
 
-  // Filter is handled by API, no need for client-side filtering
   const filtered = challenges;
+
+  // get columns definition inside component
+  const getColumns = (
+    handleView: (row: Challenge) => void,
+    handleEdit: (row: Challenge) => void,
+    handleDelete: (row: Challenge) => void
+  ): Column<Challenge>[] => [
+      {
+        header: "Challenge",
+        cell: (row) => (
+          <div>
+            <p className="font-medium text-white">{row.title}</p>
+            <p className="text-xs text-neutral-500">{row.subtitle}</p>
+          </div>
+        ),
+      },
+      {
+        header: "Category",
+        cell: (row) => <TableBadge variant={row.category}>{row.category}</TableBadge>
+      },
+      {
+        header: "Difficulty",
+        cell: (row) => <TableBadge variant={row.difficulty.toLowerCase()}>{row.difficulty}</TableBadge>
+      },
+      { header: "Participants", accessor: "participants" },
+      { header: "Created By", accessor: "createdBy" },
+      {
+        header: "Status",
+        cell: (row) => <TableBadge variant={row.status.toLowerCase()}>{row.status}</TableBadge>
+      },
+      {
+        header: "Actions",
+        cell: (row) => (
+          <RowActions
+            onView={() => handleView(row)}
+            onEdit={() => handleEdit(row)}
+            onDelete={() => handleDelete(row)}
+          />
+        ),
+      },
+    ];
 
   // ========================== Open modals ==============================
   const OpenView = (row: Challenge) => {
@@ -94,21 +97,43 @@ export default function AllChallengesTable() {
   }
 
   const OpenDelete = (row: Challenge) => {
-    console.log("Open Delete", row);
+    if (window.confirm("Are you sure you want to delete this challenge?")) {
+      handleDelete(row);
+    }
   }
 
   // ========================== Handle api calls ==========================
-  const handleEdit = (data: any) => {
-    console.log("Handle Edit api", data);
-    setIsEdit(false);
+  const handleEdit = (formData: any) => {
+    if (!selectedChallenge) return;
+
+    const payload: CreateChallengePayload = {
+      title: formData.challengeName,
+      subtitle: formData.challengeDescription,
+      category: formData.challengeType,
+      difficulty: formData.difficultyLevel.toUpperCase() as any,
+    };
+
+    toast.promise(
+      updateMutation.mutateAsync({ id: selectedChallenge.id, payload }),
+      {
+        loading: "Updating challenge...",
+        success: "Challenge updated successfully!",
+        error: (err) => `Failed to update: ${err.message}`,
+      }
+    ).then(() => {
+      setIsEdit(false);
+    });
   }
 
   const handleDelete = (data: Challenge) => {
-    console.log("Handle Delete api", data);
-  }
-
-  const handleCreate = (data: any) => {
-    console.log("Handle Create api", data);
+    toast.promise(
+      deleteMutation.mutateAsync(data.id),
+      {
+        loading: "Deleting challenge...",
+        success: "Challenge deleted successfully!",
+        error: (err) => `Failed to delete: ${err.message}`,
+      }
+    );
   }
 
   if (isLoading) {
@@ -165,8 +190,6 @@ export default function AllChallengesTable() {
             onChange: setStatus,
           },
         ]}
-
-
       />
 
       <DataTable columns={getColumns(OpenView, OpenEdit, OpenDelete)} data={filtered} />

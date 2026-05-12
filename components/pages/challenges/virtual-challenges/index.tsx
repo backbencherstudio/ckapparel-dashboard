@@ -9,7 +9,7 @@ export default function VirtualChallengesPages() {
             <PageTitle
                 title='Virtual Adventure'
                 description='Admin-created only'
-                action={<CreateChallenge />}
+                action={<CreateChallenge challengeType="virtual" />}
             />
 
             {/* table */}
