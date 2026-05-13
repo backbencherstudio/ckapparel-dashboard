@@ -22,7 +22,7 @@ export default function MessageBubble({ msg }: MessageBubbleProps) {
       className={`flex items-start gap-3 max-w-[80%] ${isSent ? "ml-auto flex-row-reverse" : ""
         }`}
     >
-      <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+      <div className="relative w-8 h-8 rounded-full overflow-hidden shrink-0">
         {msg.sender?.avatar ? (
           <Image
             src={msg.sender.avatar}

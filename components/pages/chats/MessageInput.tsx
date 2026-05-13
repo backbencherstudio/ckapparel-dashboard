@@ -12,7 +12,7 @@ export default function MessageInput({ value, onChange, onSubmit }: Props) {
   return (
     <form
       onSubmit={onSubmit}
-      className="p-4 bg-[#0a0a0a] border-t border-neutral-800 flex items-center gap-3 flex-shrink-0"
+      className="p-4 bg-[#0a0a0a] border-t border-neutral-800 flex items-center gap-3 shrink-0"
     >
       <button
         type="button"
@@ -46,7 +46,7 @@ export default function MessageInput({ value, onChange, onSubmit }: Props) {
       <button
         type="submit"
         disabled={!value.trim()}
-        className="p-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:hover:bg-blue-600 text-white rounded-full transition-colors flex items-center justify-center flex-shrink-0"
+        className="p-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:hover:bg-blue-600 text-white rounded-full transition-colors flex items-center justify-center shrink-0"
       >
         <Send className="w-4 h-4 ml-0.5" />
       </button>
