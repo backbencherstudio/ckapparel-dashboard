@@ -11,7 +11,12 @@ interface MessageListProps {
   onLoadMore?: () => void;
 }
 
-export default function MessageList({ messages, isLoading, hasMore, onLoadMore }: MessageListProps) {
+export default function MessageList({
+  messages,
+  isLoading,
+  hasMore,
+  onLoadMore,
+}: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +49,9 @@ export default function MessageList({ messages, isLoading, hasMore, onLoadMore }
 
       {messages.length === 0 && !isLoading && (
         <div className="flex items-center justify-center h-full">
-          <p className="text-neutral-500 text-sm">No messages yet. Start the conversation!</p>
+          <p className="text-neutral-500 text-sm">
+            No messages yet. Start the conversation!
+          </p>
         </div>
       )}
 
@@ -54,9 +61,12 @@ export default function MessageList({ messages, isLoading, hasMore, onLoadMore }
         </div>
       )}
 
-      {messages.map((msg) => (
-        <MessageBubble key={msg.id} msg={msg} />
-      ))}
+      {messages
+        .slice()
+        .reverse()
+        .map((msg) => (
+          <MessageBubble key={msg.id} msg={msg} />
+        ))}
       <div ref={bottomRef} />
     </div>
   );
