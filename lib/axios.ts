@@ -1,8 +1,7 @@
 import axios from "axios";
-import { extractTokensFromAuthPayload } from "@/lib/auth-tokens";
-import { getAccessToken, setTokens, clearTokens, getRefreshToken } from "@/lib/session";
 
 const refreshEnabled = () => process.env.NEXT_PUBLIC_ENABLE_REFRESH === "true";
+const isBrowser = typeof window !== "undefined";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -10,8 +9,33 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
+  config.headers = config.headers ?? {};
+
+  if (config.headers.Authorization) {
+    return config;
+  }
+
+  if (isBrowser) {
+    try {
+      const tokenResponse = await fetch("/api/auth/token");
+      if (tokenResponse.ok) {
+        const { token } = await tokenResponse.json();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
+    } catch {
+      // If token fetch fails, continue without Authorization header.
+    }
+    return config;
+  }
+
+  const { getAccessToken } = await import("@/lib/session");
   const token = await getAccessToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   return config;
 });
 
@@ -33,19 +57,18 @@ api.interceptors.response.use(
     const status = error.response?.status;
 
     if (status === 401 && !originalRequest._retry) {
-      // Don't intercept login requests
       if (originalRequest.url?.includes("/auth/login")) {
         return Promise.reject(error);
       }
 
       if (!refreshEnabled()) {
-        await clearTokens();
-        if (
-          typeof window !== "undefined" &&
-          window.location.pathname !== "/login"
-        ) {
+        if (isBrowser && window.location.pathname !== "/login") {
           window.location.href = "/login";
         }
+        return Promise.reject(error);
+      }
+
+      if (isBrowser) {
         return Promise.reject(error);
       }
 
@@ -62,24 +85,33 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        const { getRefreshToken, setTokens, clearTokens } =
+          await import("@/lib/session");
+        const { extractTokensFromAuthPayload } =
+          await import("@/lib/auth-tokens");
+
         const refreshToken = await getRefreshToken();
         if (!refreshToken) throw new Error("No refresh token");
 
         const { data } = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
-          { refreshToken }
+          { refreshToken },
         );
 
         const parsed = extractTokensFromAuthPayload(data);
         if (!parsed?.accessToken) throw new Error("Invalid refresh response");
 
-        await setTokens(parsed.accessToken, parsed.refreshToken ?? refreshToken);
+        await setTokens(
+          parsed.accessToken,
+          parsed.refreshToken ?? refreshToken,
+        );
         processQueue(null, parsed.accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${parsed.accessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+        const { clearTokens } = await import("@/lib/session");
         await clearTokens();
         if (
           typeof window !== "undefined" &&
@@ -94,7 +126,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

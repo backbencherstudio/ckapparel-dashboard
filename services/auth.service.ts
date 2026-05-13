@@ -1,7 +1,5 @@
 import api from "@/lib/axios";
-import { extractTokensFromAuthPayload } from "@/lib/auth-tokens";
-import { clearTokens, setTokens } from "@/lib/session";
-import type { LoginResponseBody, MeResponseBody, User } from "@/types/auth.types";
+import type { MeResponseBody, User } from "@/types/auth.types";
 import axios from "axios";
 
 function messageFromAxiosError(error: unknown): string {
@@ -17,12 +15,22 @@ function messageFromAxiosError(error: unknown): string {
 export const authService = {
   async login(credentials: { email: string; password: string }) {
     try {
-      const { data } = await api.post<LoginResponseBody>("/auth/login", credentials);
-      const tokens = extractTokensFromAuthPayload(data);
-      if (!tokens) throw new Error("Invalid login response");
-      await setTokens(tokens.accessToken, tokens.refreshToken);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || "Login failed");
+      }
+
       return await authService.me();
     } catch (e) {
+      if (e instanceof Error) throw e;
       throw new Error(messageFromAxiosError(e));
     }
   },
@@ -38,6 +46,8 @@ export const authService = {
   },
 
   async logout() {
-    await clearTokens();
+    await fetch("/api/auth/logout", {
+      method: "POST",
+    });
   },
 };
