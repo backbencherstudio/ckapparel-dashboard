@@ -43,7 +43,7 @@ export default function AthleteTable() {
 
   const filtered = useMemo(() => {
     return athletes.filter((athlete) => {
-      const matchesSearch = athlete.name.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch = athlete?.name?.toLowerCase().includes(search.toLowerCase());
       const matchesCountry = country ? athlete.country === country : true;
       if (country === "All Countries") {
         return matchesSearch;
